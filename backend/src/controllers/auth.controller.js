@@ -2,6 +2,7 @@ import User from '../models/User.js';
 import bcrypt from 'bcryptjs' 
 import {generateToken} from '../libs/utils.js';
 import sendEmail from '../services/mailer.js';
+import cloudinary from '../libs/cloudinary.js';
 
 export const signup = async (req, res) => {
     const {fullname , email, password} = req.body;
@@ -101,3 +102,21 @@ export const logout = (req, res) => {
     res.status(200).json({message: "Logout successful"});
 }
  
+export const updateProfile = async (req, res) => {
+    
+    try{
+        const {profilePic} = req.body;
+        if(!profilePic){
+            return res.status(400).json({message: "Profile picture is required"});
+        }
+        const user = await User.findById(req.user._id);
+        const result = await cloudinary.uploader.upload(profilePic);
+
+        const updatedUser = await User.findByIdAndUpdate(req.user._id, {profilePic: result.secure_url}, {new : true});
+        res.status(200).json({ message: "Profile updated successfully", user: updatedUser });
+    }
+    catch(err){
+        console.error("Error in updateProfile Controller:",err);
+        res.status(500).json({message: "Server error"});
+    }
+}

@@ -6,7 +6,7 @@ import authRouter from './routes/auth.route.js';
 import path from 'path';
 import {ENV} from './libs/env.js';
 import {connectDB} from './libs/db.js';
-
+import cookieParser from 'cookie-parser';
 
 const app = express();
 
@@ -19,6 +19,8 @@ app.use(cors({
 const __dirname = path.resolve();
 
 app.use(express.json());
+app.use(cookieParser());
+
 app.use('/chat/home', homeRouter);
 app.use('/chat/mailer', mailerRouter);
 app.use('/chat/auth', authRouter);
