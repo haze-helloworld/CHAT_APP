@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
+import { welcomeTemplate}  from '../emails/welcome.js';
 
 dotenv.config();
 
@@ -12,15 +13,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmail = async (email) => {
+const sendEmail = async (email, fullname) => {
 
   try {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Welcome!",
-      html: `<h1>Hello, ${email}!</h1>
-      <p>How you doin??</p>`,
+      html: welcomeTemplate(email, fullname),
     });
 
     return "Email sent";

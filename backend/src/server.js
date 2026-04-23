@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import homeRouter from './routes/home.js';
-import mailerRouter from './controllers/mailerController.js';
+import mailerRouter from './routes/mailer.route.js';
 import authRouter from './routes/auth.route.js';
 import path from 'path';
 import dotenv from 'dotenv';
@@ -21,7 +21,7 @@ const __dirname = path.resolve();
 
 app.use(express.json());
 app.use('/chat/home', homeRouter);
-app.use('/chat/home/data', mailerRouter);
+app.use('/chat/mailer', mailerRouter);
 app.use('/chat/auth', authRouter);
 
 
