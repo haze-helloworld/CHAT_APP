@@ -4,14 +4,13 @@ import homeRouter from './routes/home.js';
 import mailerRouter from './routes/mailer.route.js';
 import authRouter from './routes/auth.route.js';
 import path from 'path';
-import dotenv from 'dotenv';
+import {ENV} from './libs/env.js';
 import {connectDB} from './libs/db.js';
 
-dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 5000;
+const PORT = ENV.PORT;
 app.use(cors({
     origin : 'http://localhost:5173',
     credentials : true}
@@ -25,7 +24,7 @@ app.use('/chat/mailer', mailerRouter);
 app.use('/chat/auth', authRouter);
 
 
-if (process.env.NODE_ENV === 'production') {
+if (ENV.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../frontend/dist')));
 
     app.get('*', (req, res) => {

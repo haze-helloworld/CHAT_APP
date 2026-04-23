@@ -1,15 +1,15 @@
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import {ENV} from '../libs/env.js';
 import { welcomeTemplate}  from '../emails/welcome.js';
 
-dotenv.config();
+
 
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASSWORD,
+    user: ENV.EMAIL_USER,
+    pass: ENV.EMAIL_PASSWORD,
   },
 });
 
@@ -17,7 +17,7 @@ const sendEmail = async (email, fullname) => {
 
   try {
     await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: ENV.EMAIL_USER,
       to: email,
       subject: "Welcome!",
       html: welcomeTemplate(email, fullname),
