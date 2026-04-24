@@ -7,6 +7,7 @@ import path from 'path';
 import {ENV} from './libs/env.js';
 import {connectDB} from './libs/db.js';
 import cookieParser from 'cookie-parser';
+import messageRouter from './routes/message.route.js';
 
 const app = express();
 
@@ -24,7 +25,7 @@ app.use(cookieParser());
 app.use('/chat/home', homeRouter);
 app.use('/chat/mailer', mailerRouter);
 app.use('/chat/auth', authRouter);
-
+app.use('/chat/message', messageRouter);
 
 if (ENV.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../frontend/dist')));

@@ -6,7 +6,7 @@ import { arcjetprotection } from '../middleware/arcjet.middleware.js';
 
 const authRouter = express.Router();
 
-authRouter.use(arcjetprotection); // Apply Arcjet protection to all auth routes
+//authRouter.use(arcjetprotection); // Apply Arcjet protection to all auth routes
 
 authRouter.post('/signup', signup);
 authRouter.post('/login', login); //postman is detected as bot by arcjet
