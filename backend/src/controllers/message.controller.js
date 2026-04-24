@@ -1,7 +1,7 @@
 import Message from '../models/Message.js';
 import ChatRoom from '../models/chatRoom.js';
 import User from '../models/User.js';
-import { validateContactId } from '../middleware/validateContactId.middleware.js';
+import { validateContactId } from '../middleware/validateUserId.middleware.js';
 import { ObjectId } from 'mongodb';
 export const getAllContacts = async (req, res) => {
     try{
@@ -17,11 +17,38 @@ export const getAllContacts = async (req, res) => {
    
 };
 
+export const addContacts = async (req, res) => {
+    try{
+        const loggedinUserId = req.user._id;
+        const {UserId} = req.body;
+        const user = await User.findById(loggedinUserId);
+
+        if (user.contacts.some(id => id.toString() === UserId)) {
+            return res.status(400).json({ error: "Contact already exists" });
+        }
+    
+        
+        user.contacts.push(UserId);
+        await user.save();
+        res.json({ message: "Contact added successfully" });
+        
+    }
+    catch(error){
+        console.error("Error adding contact:", error);
+        res.status(500).json({ error: "Failed to add contact" });
+    }
+}
+
 export const getAllChats = async (req, res) => {
     try{
         const loggedinUserId = req.user._id;
-        const chatRooms = await ChatRoom.find({ participants: loggedinUserId }).populate('participants', '-password');
-        res.json({ chatRooms });
+        const chats = await ChatRoom.find(
+          { participants: loggedinUserId },
+          { _id: 1, lastMessage: 1 })
+            .populate('lastMessage')
+            .sort({ updatedAt: -1 })
+            .lean();
+        res.json({ chats });
     }
     catch(err){
         console.error("Error fetching chat rooms:", err);
@@ -29,15 +56,31 @@ export const getAllChats = async (req, res) => {
     }
 };
 
-export const getMessageById = async (req, res) => {
+export const getMessagesById = async (req, res) => {
     try{
-        const messageId = req.params.id;
-        const message = await Message.findById(messageId);
-        res.json({ message });
+        const chatId = req.params.id;
+        const { cursor } = req.query;
+        if (!chatId) {
+        return res.status(400).json({ error: "chatId is required" });}
+
+        const query = { chatId: chatId };
+         if (cursor) {
+            query.createdAt = { $lt: new Date(cursor) };
+        }
+
+        const messages = await Message.find(query).sort({ createdAt: -1 }).limit(50).lean();
+         
+        res.json({
+            messages,
+            nextCursor: messages.length > 0 
+                ? messages[messages.length - 1].createdAt 
+                : null
+        });
+
     }
     catch(err){
-        console.error("Error fetching message:", err);
-        res.status(500).json({ error: "Failed to fetch message" });
+        console.error("Error fetching messages:", err);
+        res.status(500).json({ error: "Failed to fetch messages" });
     }
 };
 
@@ -53,25 +96,77 @@ export const getParticipants = async (req, res) => {
     }
 };
 
-export const addContacts = async (req, res) => {
+export const addParticipant = async (req, res) => {
     try{
-        console.log("Adding contact with ID:", req.body.contactId);
-        const loggedinUserId = req.user._id;
-        const contactId = (req.body.contactId);
-        const user = await User.findById(loggedinUserId);
-
-        if (user.contacts.some(id => id.toString() === contactId)) {
-            return res.status(400).json({ error: "Contact already exists" });
+        const groupId = req.params.groupId;
+        const { UserId } = req.body;
+        const chatRoom = await ChatRoom.findById(groupId);
+        if(!chatRoom){
+            return res.status(404).json({ error: "Chat room not found" });
         }
-    
-        
-        user.contacts.push(contactId);
-        await user.save();
-        res.json({ message: "Contact added successfully" });
-        
+        if(chatRoom.participants.some (id => id.toString() === UserId)){
+            return res.status(400).json({ error: "Participant already in group" });
+        }
+        chatRoom.participants.push(UserId);
+        await chatRoom.save();
+        res.json({ message: "Participant added successfully" });
     }
-    catch(error){
-        console.error("Error adding contact:", error);
-        res.status(500).json({ error: "Failed to add contact" });
+    catch(err){
+        console.error("Error adding participant:", err);
+        res.status(500).json({ error: "Failed to add participant" });
     }
-}
+};
+
+export const removeParticipant = async (req, res) => {
+    try{
+        const groupId = req.params.groupId;
+        const { UserId } = req.body;
+        const chatRoom = await ChatRoom.findById(groupId);  
+        if(!chatRoom){
+            return res.status(404).json({ error: "Chat room not found" });
+        }
+        chatRoom.participants = chatRoom.participants.filter(id => id.toString() !== UserId);
+        await chatRoom.save();
+        res.json({ message: "Participant removed successfully" });
+    }
+    catch(err){
+        console.error("Error removing participant:", err);
+        res.status(500).json({ error: "Failed to remove participant" });
+    }
+};
+
+export const createGroup = async (req, res) => {
+    const { groupName, participantIds } = req.body;
+    try{
+        const loggedinUserId = req.user._id;    
+        const newChatRoom = new ChatRoom({
+            name: groupName,
+            participants: [loggedinUserId, ...participantIds]
+        });
+        await newChatRoom.save();
+        res.status(201).json({ message: "Group created successfully", chatRoom: newChatRoom });
+    }
+    catch(err){
+        console.error("Error creating group:", err);
+        res.status(500).json({ error: "Failed to create group" });
+    }
+};
+
+export const sendMessage = async (req, res) => {
+    const {chatId, content} = req.body;
+    try{
+        const loggedinUserId = req.user._id;
+        const newMessage = new Message({
+            chatId,
+            sender: loggedinUserId,
+            content : content
+        });
+        await newMessage.save();
+        await ChatRoom.findByIdAndUpdate(chatId, { $push: { messages: newMessage._id } }, { lastMessage: newMessage._id });
+        res.status(201).json({ message: "Message sent successfully", message: newMessage });
+    }
+    catch(err){
+        console.error("Error sending message:", err);
+        res.status(500).json({ error: "Failed to send message" });
+    }
+};

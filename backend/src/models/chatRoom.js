@@ -1,6 +1,4 @@
 import mongoose from 'mongoose';
-import Message from './Message.js';
-import User from './User.js';
 
 
 const chatRoomSchema = new mongoose.Schema({
@@ -26,6 +24,10 @@ const chatRoomSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : 'User',
         required : function() { return this.isGroupChat; }
+    },
+    lastMessage : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : 'Message'
     }
 
 }, {timestamps : true});
