@@ -1,11 +1,11 @@
 import User from "../models/User.js";
 import { ObjectId } from "mongodb";
-
-export const validateGroupId = async (req, res, next) => {
+import ChatRoom from "../models/chatRoom.js";
+export const validatechatId = async (req, res, next) => {
     
-    const {GroupId} = req.params.groupId;
+    const {chatId} = req.params;
     try{
-        const group = await ChatRoom.findById(GroupId);
+        const group = await ChatRoom.findById(chatId);
         if(!group){
             return res.status(404).json({error: "Chat Room not found"});
         }
