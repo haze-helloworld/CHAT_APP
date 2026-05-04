@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import ChatRoom from "../models/chatRoom.js";
 export const validatechatId = async (req, res, next) => {
     
-    const {chatId} = req.params;
+    const {chatId} = req.params.chatId;
     try{
         const group = await ChatRoom.findById(chatId);
         if(!group){

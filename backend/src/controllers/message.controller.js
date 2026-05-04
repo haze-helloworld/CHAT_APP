@@ -2,6 +2,8 @@ import Message from '../models/Message.js';
 import ChatRoom from '../models/chatRoom.js';
 import User from '../models/User.js';
 import { ObjectId } from 'mongodb';
+import cloudinary from 'cloudinary';
+
 
 export const getAllContacts = async (req, res) => {
     try{
@@ -26,12 +28,19 @@ export const addContacts = async (req, res) => {
         if (user.contacts.some(id => id.toString() === UserId)) {
             return res.status(400).json({ error: "Contact already exists" });
         }
-    
+        chatroom = await ChatRoom.create({
+                participants: [loggedinUserId, userId],
+                isGroup: false
+            });
+       
         
-        user.contacts.push(UserId);
+         
+        user.contacts.push({UserId, chatId: chatroom._id});
         await user.save();
-        res.json({ message: "Contact added successfully" });
-        
+        res.json({
+            message: "Contact added successfully",
+            chatId: chatroom._id
+        });
     }
     catch(error){
         console.error("Error adding contact:", error);
@@ -142,12 +151,19 @@ export const removeParticipant = async (req, res) => {
 export const createGroup = async (req, res) => {
     const { groupName, participantIds } = req.body;
 
-    
+     if (!groupName || !participantIds || participantIds.length < 1) {
+            return res.status(400).json({
+                error: "Group name and at least 2 participants required"
+            });
+        }
+
     try{
         const loggedinUserId = req.user._id;    
         const newChatRoom = new ChatRoom({
             name: groupName,
-            participants: [loggedinUserId, ...participantIds]
+            participants: [loggedinUserId, ...participantIds],
+            isGroup: true,
+            admin: loggedinUserId
         });
         await newChatRoom.save();
         res.status(201).json({ message: "Group created successfully", chatRoom: newChatRoom });
@@ -159,15 +175,22 @@ export const createGroup = async (req, res) => {
 };
 
 export const sendMessage = async (req, res) => {
-    const {chatId, content} = req.body;
+    const { content} = req.body;
+    const chatId = req.params.chatId;
+    if (!content.mediaUrl ){
+        const uploadResponse = await cloudinary.uploader.upload(mediaUrl);
+        content.mediaUrl = uploadResponse.secure_url;
+    }
     try{
         const loggedinUserId = req.user._id;
         const newMessage = new Message({
             chatId,
-            sender: loggedinUserId,
+            senderId: loggedinUserId,
             content : content
         });
         await newMessage.save();
+
+        // send message in real time using socket.io
         await ChatRoom.findByIdAndUpdate(chatId, { $push: { messages: newMessage._id } }, { $set: { lastMessage: newMessage._id } });
         res.status(201).json({ message: "Message sent successfully", data: newMessage });
     }

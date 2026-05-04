@@ -7,18 +7,20 @@ import { validatechatId } from '../middleware/validateGroupId.middleware.js';
 const messageRouter = express.Router();
 
 messageRouter.use(protectRoute);
-
-messageRouter.post('/add-contacts',validateUserId, addContacts);
+// 🔹 contacts
+messageRouter.post('/contacts', validateUserId, addContacts);
 messageRouter.get('/contacts', getAllContacts);
+
+// 🔹 chats
 messageRouter.get('/chats', getAllChats);
-messageRouter.get('/:chatId',validatechatId,getMessagesById);
-messageRouter.get('/:chatId/participants',validatechatId,getParticipants);
+messageRouter.post('/chats/group', createGroup);
 
-messageRouter.post('/send/:chatId', sendMessage);
+// 🔹 messages
+messageRouter.get('/chats/:chatId/messages', validatechatId, getMessagesById);
+messageRouter.post('/chats/:chatId/messages', validatechatId, sendMessage);
 
-messageRouter.post('/add-participant/:chatId', validateUserId,validatechatId, addParticipant);
-messageRouter.post('/remove-participant/:chatId', validateUserId,validatechatId, removeParticipant);
-
-messageRouter.post('/create-group', createGroup);
-
+// 🔹 participants
+messageRouter.get('/chats/:chatId/participants', validatechatId, getParticipants);
+messageRouter.post('/chats/:chatId/participants', validateUserId, validatechatId, addParticipant);
+messageRouter.delete('/chats/:chatId/participants', validateUserId, validatechatId, removeParticipant);
 export default messageRouter;
