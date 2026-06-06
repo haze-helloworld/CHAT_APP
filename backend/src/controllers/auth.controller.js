@@ -42,6 +42,7 @@ if(newUser){
         _id: savedUser._id,
         fullName: savedUser.fullName,
         email: savedUser.email,
+        profilePic: savedUser.profilePic,
         message : "User created successfully"});
 
             try{

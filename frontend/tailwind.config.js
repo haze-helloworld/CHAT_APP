@@ -4,7 +4,11 @@ import daisyui from "daisyui";
 export default {
   content: ["./index.html","./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        iosevka: ['Iosevka Charon', 'monospace'],
+      },
+    },
   },
   plugins: [
     daisyui

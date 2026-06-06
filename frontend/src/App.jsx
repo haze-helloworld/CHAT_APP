@@ -3,9 +3,22 @@ import FaultyTerminal from './assets/FaultyTerminal';
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
 import GroupMemberPage from "./pages/GroupMemberPage";
-import { Routes, Route } from 'react-router';
+import { Routes, Route,  Navigate } from 'react-router';
+import { useAuthStore } from './store/useAuthStore';
+import { useEffect } from 'react';
+import PageLoader from './components/PageLoader';
+import {Toaster} from 'react-hot-toast';
+
 function App() {
 
+    const {checkAuth, isCheckingAuth, authUser} = useAuthStore();
+    useEffect(() => {
+        checkAuth();
+    }, [checkAuth]);
+     
+
+    if (isCheckingAuth) {return <PageLoader />}
+  
   return (
 
     <div style={{ position: "relative", width: "100%", height: "100vh" }}>
@@ -39,11 +52,14 @@ function App() {
 
       <div style={{ position: "relative", zIndex: 1 }}>
         <Routes>
-          <Route path="/" element={<ChatPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<SignUp />} />
+          <Route path="/" element={authUser ? <ChatPage /> : <Navigate to="/signup" />} />
+          <Route path="/signup" element={!authUser ? <SignUp /> : <Navigate to="/" />} />
+          <Route path="/login" element={!authUser ? <Login /> : <Navigate to="/" />} />
+         
           <Route path="/group-members" element={<GroupMemberPage />} />
         </Routes>
+
+        <Toaster/>
       </div>
     </div>
 

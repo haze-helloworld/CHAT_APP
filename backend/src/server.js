@@ -12,14 +12,12 @@ import messageRouter from './routes/message.route.js';
 const app = express();
 
 const PORT = ENV.PORT;
-app.use(cors({
-    origin : 'http://localhost:5173',
-    credentials : true}
-));
+
 
 const __dirname = path.resolve();
 
 app.use(express.json());
+app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(cookieParser());
 
 app.use('/chat/home', homeRouter);

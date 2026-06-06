@@ -16,6 +16,7 @@ export const protectRoute = async (req, res, next) => {
         if(!user){
             return res.status(401).json({message: 'Unauthorized - user not found'});
         }
+        
         req.user = user;
         next();
     }
@@ -23,4 +24,4 @@ export const protectRoute = async (req, res, next) => {
         console.error("Error in protectRoute middleware:", err);
         return res.status(500).json({message: 'Unauthorized - error verifying token'});
     }
-}
+};
