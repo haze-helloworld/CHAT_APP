@@ -76,6 +76,7 @@ const handleSubmit = (e) => {
 
         <button
           type="submit"
+          disabled={isSigningUp}
           className="w-full bg-[#907fb8] text-[#292832] py-2 rounded-lg hover:bg-[#683064] hover:text-[#907fb8] transition-colors duration-300 disabled:opacity-50 font-iosevkaSS"
         >
           {isSigningUp ? <LoaderIcon className= "w-full h-5 text-center animate-spin" /> : "Create Account"}

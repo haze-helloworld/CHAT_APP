@@ -1,39 +1,135 @@
-export const welcomeTemplate = (email ,name) => `
-  <div style="font-family: monospace, sans-serif; background-color: rgb(0, 19, 39); padding: 20px;">
-    <div style="max-width: 600px; margin: auto; background: rgb(9, 56, 72); border-radius: 10px; padding: 30px; text-align: center;">
-      
-    <img src="https://res.cloudinary.com/dqfwkavre/image/upload/v1776953655/cat_puhcng.png" alt="CAT" style="width: 100px; margin-bottom: 20px;" />
-      <h1 style="color: #ebebeb;">Welcome to Chatty</h1>
-      
-      <p style="font-size: 20px; color: #a3a2f8;">
-        Hey <strong>${name}</strong>, we're excited to have you onboard!
-      </p>
-      
-      <p style="font-size: 16px; color: #609be3;">
-        Start chatting, exploring, and enjoying the experience 🚀
-      </p>
+export const welcomeTemplate = (email, name) => `
+<div style="margin:0;padding:0;background:#291832;font-family:Arial,sans-serif;">
 
-      <a href="#" style="
-        display: inline-block;
-        margin-top: 20px;
-        padding: 12px 20px;
-        background-color: #f7ff02;
-        color: rgb(00, 19, 39);
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
+  <div style="padding:40px 20px;">
+    <div style="
+      max-width:600px;
+      margin:auto;
+      background:#3D284C;
+      border-radius:20px;
+      overflow:hidden;
+      border:1px solid #BB9DD7;
+      box-shadow:0 0 30px rgba(187,157,215,0.25);
+    ">
+
+      <!-- Header -->
+      <div style="
+        background:linear-gradient(
+          180deg,
+          #3D284C 0%,
+          #4A335F 100%
+        );
+        padding:30px;
+        margin:10px;
+        border-radius:20px;
+        text-align:center;
       ">
-        Get Started
-      </a>
+        <img
+          src="https://res.cloudinary.com/dqfwkavre/image/upload/v1780816051/seal_mailman_e4op95.png"
+          alt="Seal Chat Mascot"
+          style="width:240px;height:auto;"
+        />
 
-      <p style="margin-top: 30px; font-size: 12px; color: #aaa;">
-        If you didn’t sign up, you can ignore this email.
-      </p>
+        <h1 style="
+          color:#FFFFFF;
+          margin:15px 0 0;
+          font-size:32px;
+          font-family:'Courier New', Courier, monospace;
+        ">
+          Welcome To SealChat
+        </h1>
+      </div>
 
-      <p style="font-size: 12px; color: #f0f0f0;">
-        Cheers,<br />
-        jjttanvi@gmail.com
+      <!-- Content -->
+      <div style="padding:35px;">
+
+        <p style="
+          color:#DECAE9;
+          font-size:20px;
+          line-height:1.6;
+          font-family:'Trebuchet MS', sans-serif;
+        ">
+          Hey <strong>${name}</strong>,
         </p>
+
+        <p style="
+          color:#D4BDE3;
+          font-size:16px;
+          line-height:1.8;
+          font-family:'Trebuchet MS', sans-serif;
+        ">
+          Your mailbox just got a little more exciting.<br>
+          <b>
+            Welcome aboard SealChat — a cozy place to chat,
+            connect, and share messages with friends.
+          </b>
+        </p>
+
+        <div style="text-align:center;margin:35px 0;">
+          <a
+            href="#"
+            style="
+              display:inline-block;
+              background:#BB9DD7;
+              color:#291832;
+              text-decoration:none;
+              padding:16px 34px;
+              border-radius:12px;
+              font-weight:700;
+              font-size:16px;
+              font-family:'Courier New', Courier, monospace;
+              box-shadow:0 4px 15px rgba(187,157,215,0.4);
+            "
+          >
+            Start Chatting
+          </a>
+        </div>
+
+        <div style="
+          background:#3D284C;
+          border:1px solid #BB9DD7;
+          border-radius:12px;
+          padding:18px;
+          color:#DECAE9;
+          font-size:14px;
+          line-height:1.7;
+          font-family:'Trebuchet MS', sans-serif;
+        ">
+          🦭 Your friendly seal messenger is ready to deliver
+          conversations, reactions, and good vibes.
+        </div>
+
+        <p style="
+          margin-top:30px;
+          color:#D4BDE3;
+          font-size:13px;
+          font-family:'Trebuchet MS', sans-serif;
+        ">
+          If you didn't create this account, you can safely ignore this email.
+        </p>
+
+        <hr style="
+          border:none;
+          border-top:1px solid #BB9DD7;
+          margin:30px 0;
+        ">
+
+        <p style="
+          color:#D4BDE3;
+          font-size:13px;
+          text-align:center;
+          font-family:'Courier New', Courier, monospace;
+        ">
+          Cheers,
+          <br><br>
+          <strong style="color:#DECAE9;">
+            The SealChat Team
+          </strong>
+        </p>
+
+      </div>
     </div>
   </div>
+
+</div>
 `;
