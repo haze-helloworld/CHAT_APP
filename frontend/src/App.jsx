@@ -30,6 +30,8 @@ function App() {
           width: "100%",
           height: "100%",
           zIndex: -1,
+        
+          
         }}
         scale={2.1}
         gridMul={[2, 1]}

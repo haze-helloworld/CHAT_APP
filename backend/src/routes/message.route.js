@@ -7,19 +7,19 @@ import { validatechatId } from '../middleware/validateGroupId.middleware.js';
 const messageRouter = express.Router();
 
 messageRouter.use(protectRoute);
-// 🔹 contacts
+//contacts
 messageRouter.post('/contacts', validateUserId, addContacts);
 messageRouter.get('/contacts', getAllContacts);
 
-// 🔹 chats
+//chats
 messageRouter.get('/chats', getAllChats);
 messageRouter.post('/chats/group', createGroup);
 
-// 🔹 messages
+//messages
 messageRouter.get('/chats/:chatId/messages', validatechatId, getMessagesById);
 messageRouter.post('/chats/:chatId/messages', validatechatId, sendMessage);
 
-// 🔹 participants
+//participants
 messageRouter.get('/chats/:chatId/participants', validatechatId, getParticipants);
 messageRouter.post('/chats/:chatId/participants', validateUserId, validatechatId, addParticipant);
 messageRouter.delete('/chats/:chatId/participants', validateUserId, validatechatId, removeParticipant);
