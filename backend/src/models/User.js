@@ -5,10 +5,16 @@ const userSchema = new mongoose.Schema({
         type : String,
         required : true
     },
-    contacts : [{
-        type : mongoose.Schema.Types.ObjectId,
-        ref : 'User'
-    }],
+    contacts : [ {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      chatId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ChatRoom",
+      },
+    },],
     email:{
         type : String,
         required : true,
@@ -27,6 +33,12 @@ const userSchema = new mongoose.Schema({
         type : String,
         enum : ['online', 'offline', 'away'],
         default : 'offline'
+    },
+    friendCode :{
+        type: String,
+        unique: true,
+        index: true
+
     }
 },
 {timestamps:true}

@@ -5,7 +5,7 @@ import {User2Icon, MailboxIcon, LockIcon, LoaderIcon} from "lucide-react";
 import toast  from "react-hot-toast";
 
 function SignUp() {
-  const [formData, setFormData] = useState({fullname : "", email: "", password: ""});
+  const [formData, setFormData] = useState({fullName : "", email: "", password: ""});
   const {signup , isSigningUp} = useAuthStore();
 
 const handleSubmit = (e) => {
@@ -21,8 +21,8 @@ const handleSubmit = (e) => {
   <div className="w-full max-w-5xl bg-[#281730] rounded-2xl shadow-lg overflow-hidden flex ">
 
     <div className="w-full md:w-1/2 p-8">
-      <h1 className="text-3xl font-bold font-mono text-center  mb-6">
-        Create Account
+      <h1 className="text-3xl font-bold font-pixelify text-center  mb-6">
+        Create Your SealChat Account
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -35,8 +35,8 @@ const handleSubmit = (e) => {
           </div>
           <input
             type="text"
-            value={formData.fullname}
-            onChange={(e) => setFormData({...formData, fullname: e.target.value})}
+            value={formData.fullName}
+            onChange={(e) => setFormData({...formData, fullName: e.target.value})}
             placeholder="Enter your full name"
             className="w-full px-4 py-2 border rounded-lg focus:outline-none bg-[#4b3d52] focus:ring-white-500 font-light font-iosevka"
           />

@@ -1,19 +1,20 @@
 import {create} from 'zustand';
+import axiosInstance from "../libs/axios.js";
 
 export const useChatStore = create((set, get) => ({
     allContacts: [],
     chats: [],
     messages: [],
-    activeTab: 'chats',
-    parsticipants: [],
+    activeTab: 'contacts',
+    participants: [],
     selectedChat:null,
     isUsersLoading: false,
     isMessagesLoading: false,
-    isSoundEnabled: localStorage.getItem('isSoundEnabled') === 'true',
+    isSoundEnabled: JSON.parse(localStorage.getItem('isSoundEnabled')) === true,
     isParticipantLoading: false,
 
     toggleSound: () => {
-       localStorage.setItem('isSoundEnabled', !get().isSoundEnabled); 
+       localStorage.setItem('isSoundEnabled', (!get().isSoundEnabled)); 
        set({isSoundEnabled: !get().isSoundEnabled});
     },
 
@@ -23,17 +24,22 @@ export const useChatStore = create((set, get) => ({
         set({isUsersLoading: true});
         try{
             const response = await axiosInstance.get('message/contacts');
-            set({allContacts: response.data});
+            set({allContacts: response.data.contacts});
+            console.log(response.data.contacts);
+            console.log("Contacts fetched");
+
         } catch (error) {
             console.error('Error fetching contacts:', error);
+               
+
         } finally {
             set({isUsersLoading: false});
         }
     },
-    getAllChats: async () => {
+    getAllChats: async (chatId) => {
         set({isUsersLoading: true});
         try{
-            const response = await axiosInstance.get('message/chats');
+            const response = await axiosInstance.get(`/message/chats/${chatId}/messages`);
             set({chats: response.data});
         } catch (error) {
             console.error('Error fetching chats:', error);
@@ -44,7 +50,7 @@ export const useChatStore = create((set, get) => ({
     getAllParticipants: async (chatId) => {
         set({isParticipantLoading: true});
         try{
-            const response = await axiosInstance.get(`message/chats/${chatId}/participants`);
+            const response = await axiosInstance.get(`/message/chats/${chatId}/participants`);
             set({participants: response.data});
         } catch (error) {
             console.error('Error fetching participants:', error);
@@ -55,7 +61,7 @@ export const useChatStore = create((set, get) => ({
     getAllMessages: async (chatId) => {
         set({isMessagesLoading: true});
         try{
-            const response = await axiosInstance.get(`message/chats/${chatId}/messages`);
+            const response = await axiosInstance.get(`/message/chats/${chatId}/messages`);
             set({messages: response.data});
         } catch (error) {
             console.error('Error fetching messages:', error);
@@ -63,4 +69,6 @@ export const useChatStore = create((set, get) => ({
             set({isMessagesLoading: false});
         }
     }
+
+
 }));

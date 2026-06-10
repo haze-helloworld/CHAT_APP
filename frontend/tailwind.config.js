@@ -7,6 +7,7 @@ export default {
     extend: {
       fontFamily: {
         iosevka: ['Iosevka Charon', 'monospace'],
+        pixelify: ['Pixelify Sans', 'sans-serif'],
       },
     },
   },

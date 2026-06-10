@@ -6,9 +6,9 @@ import ChatsList from "../components/ChatsList";
 import ContactList from "../components/ContactList";
 import ChatContainer from "../components/ChatContainer";
 import NoConversationPlaceholder from "../components/NoConversationPlaceholder";
-
+import AddFriendButton from "../components/AddFriendButton";
 function ChatPage() {
-  const { activeTab, selectedUser } = useChatStore();
+  const { activeTab, selectedChat } = useChatStore();
 
   return (
     <div className="min-h-screen transparent flex items-center justify-center p-6">
@@ -43,6 +43,7 @@ function ChatPage() {
         >
           <ProfileHeader />
 
+        <AddFriendButton />
           <div className="px-4 pt-2">
             <ActiveTabSwitch />
           </div>
@@ -68,7 +69,7 @@ function ChatPage() {
             shadow-lg
           "
         >
-          {selectedUser ? (
+          {selectedChat ? (
             <ChatContainer />
           ) : (
             <NoConversationPlaceholder />

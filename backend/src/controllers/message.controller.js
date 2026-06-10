@@ -3,39 +3,104 @@ import ChatRoom from '../models/chatRoom.js';
 import User from '../models/User.js';
 import { ObjectId } from 'mongodb';
 import cloudinary from 'cloudinary';
-
-
+import { nanoid } from 'nanoid';
 export const getAllContacts = async (req, res) => {
-    try{
-        const loggedinUserId = req.user._id;
-        const user = await User.findById(loggedinUserId);
-        const contacts = await User.find({_id: {$in: user.contacts}}).select("-password");
-        res.json({ contacts });
+    try {
+        const user = req.user;
+
+        // Get all contact user IDs
+        const contactIds = user.contacts.map(
+            contact => contact.userId
+        );
+
+        // Get all contact users
+        const users = await User.find({
+            _id: { $in: contactIds }
+        }).select("-password");
+
+        // Get all chat IDs
+        const chatIds = user.contacts.map(
+            contact => contact.chatId
+        );
+
+        // Get all chats with last message
+        const chats = await ChatRoom.find({
+            _id: { $in: chatIds }
+        })
+        .populate("lastMessage")
+        .lean();
+
+        // Merge user + chat data
+        const contacts = user.contacts.map(contact => {
+
+            const contactUser = users.find(
+                u => u._id.toString() === contact.userId.toString()
+            );
+
+            const chat = chats.find(
+                c => c._id.toString() === contact.chatId.toString()
+            );
+
+            return {
+                user: contactUser,
+                chat: {
+                    _id: chat?._id,
+                    lastMessage: chat?.lastMessage,
+                    updatedAt: chat?.updatedAt
+                }
+            };
+        });
+
+        return res.status(200).json({
+            contacts
+        });
+
+    } catch (error) {
+        console.error("Error fetching contacts:", error);
+
+        return res.status(500).json({
+            error: "Failed to fetch contacts"
+        });
     }
-    catch(err){
-        console.error("Error fetching contacts:", err);
-        res.status(500).json({ error: "Failed to fetch contacts" });
-    }
-   
 };
+   
 
 export const addContacts = async (req, res) => {
     try{
+        const loggedinUser= req.user;
         const loggedinUserId = req.user._id;
         const {UserId} = req.body;
-        const user = await User.findById(loggedinUserId);
+        const user = await User.findById((UserId));
 
-        if (user.contacts.some(id => id.toString() === UserId)) {
-            return res.status(400).json({ error: "Contact already exists" });
-        }
-        chatroom = await ChatRoom.create({
-                participants: [loggedinUserId, userId],
-                isGroup: false
+
+        if (loggedinUserId.toString() === UserId) {
+                return res.status(400).json({
+                    error: "You cannot add yourself"
+                    });
+                }
+
+                if(!user){
+                    return res.status(404).json({
+                        error: "User not found"
+                    });
+                }
+                    
+                if (user.contacts.some(contact => contact.userId.toString() === UserId)){
+                        return res.status(400).json({
+                        error: "Contact already exists"
+                                });
+                                }
+        const chatroom = await ChatRoom.create({
+                participants: [loggedinUserId, UserId],
+                isGroup: false,
+                groupCode: nanoid(8)
             });
        
         
          
-        user.contacts.push({UserId, chatId: chatroom._id});
+        loggedinUser.contacts.push({userId: UserId, _id: chatroom._id});
+        user.contacts.push({userId: loggedinUserId, _id: chatroom._id});
+        await loggedinUser.save();
         await user.save();
         res.json({
             message: "Contact added successfully",
@@ -191,7 +256,7 @@ export const sendMessage = async (req, res) => {
         await newMessage.save();
 
         // send message in real time using socket.io
-        await ChatRoom.findByIdAndUpdate(chatId, { $push: { messages: newMessage._id } }, { $set: { lastMessage: newMessage._id } });
+        await ChatRoom.findByIdAndUpdate(ObjectId(chatId), { $push: { messages: newMessage._id } }, { $set: { lastMessage: newMessage._id } });
         res.status(201).json({ message: "Message sent successfully", data: newMessage });
     }
     catch(err){

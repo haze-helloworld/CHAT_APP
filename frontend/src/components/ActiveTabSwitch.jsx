@@ -1,14 +1,47 @@
 
+import{ useState } from "react";
+import clicksound from "../assets/sounds/mouse-click.mp3";
+import { useChatStore } from "../store/useChatStore.js";
+
 const ActiveTabSwitch = () => {
-  return (
-    <div className="flex items-center justify-center p-4">
-      <button className="bg-[#65407D] text-white py-2 px-4 rounded-lg hover:bg-[#73508F]">
-        Chats
-      </button>
-      <button className="bg-[#65407D] text-white py-2 px-4 rounded-lg hover:bg-[#73508F] ml-2">
-        Contacts
-      </button>
-    </div>
-  );
+ const {activeTab, setActiveTab, isSoundEnabled} = useChatStore();
+ const mouseClickSound = new Audio(clicksound);
+
+ const playClickSound = () => {
+  if(!isSoundEnabled) return;
+    mouseClickSound.currentTime = 0;
+    mouseClickSound.play().catch((error) => console.log("Error playing sound:", error));
+ };
+return (
+  <div className="flex bg-[#291832] p-1 rounded-full w-full">
+    <button
+      onClick={() => {
+        setActiveTab("chats");
+        playClickSound();
+      }}
+      className={`flex-1 py-2 rounded-full transition-transform duration-300 ${
+        activeTab === "chats"
+          ? "bg-[#65407D] text-white"
+          : "text-gray-300"
+      }`}
+    >
+      Chats
+    </button>
+
+    <button
+      onClick={() => {
+        setActiveTab("contacts");
+        playClickSound();
+      }}
+      className={`flex-1 py-2 rounded-full transition-transform duration-300 ${
+        activeTab === "contacts"
+          ? "bg-[#65407D] text-white"
+          : "text-gray-300"
+      }`}
+    >
+      Contacts
+    </button>
+  </div>
+);
 };
 export default ActiveTabSwitch;

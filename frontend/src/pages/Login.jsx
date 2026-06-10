@@ -22,8 +22,8 @@ const handleSubmit = (e) => {
   <div className="w-full max-w-5xl bg-[#281730] rounded-2xl shadow-lg overflow-hidden flex ">
 
     <div className="w-full md:w-1/2 p-8">
-      <h1 className="text-3xl font-bold font-mono text-center  mb-6">
-        Login
+      <h1 className="text-3xl font-bold font-pixelify text-center  mb-6">
+        Login to SealChat
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-4">

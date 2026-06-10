@@ -3,12 +3,13 @@ import bcrypt from 'bcryptjs'
 import {generateToken} from '../libs/utils.js';
 import sendEmail from '../services/mailer.js';
 import cloudinary from '../libs/cloudinary.js';
+import {nanoid} from 'nanoid';
 
 export const signup = async (req, res) => {
-    const {fullname , email, password} = req.body;
+    const {fullName , email, password} = req.body;
 
     try{
-    if(!fullname || !email || !password){
+    if(!fullName || !email || !password){
         return res.status(400).json({message: "All fields are required"});
     }   
 
@@ -29,9 +30,10 @@ const salt = await bcrypt.genSalt(10);
 const hashedPassword = await bcrypt.hash(password, salt);
 
 const newUser = new User({
-    fullName: fullname,
+    fullName: fullName,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    friendCode: nanoid(8)
 });
 
 if(newUser){
