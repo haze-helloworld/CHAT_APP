@@ -114,25 +114,98 @@ export const addContacts = async (req, res) => {
 }
 
 export const getAllChats = async (req, res) => {
-    try{
+    try {
         const loggedinUserId = req.user._id;
-        const chats = await ChatRoom.find(
-          { participants: loggedinUserId },
-          { _id: 1, lastMessage: 1 })
-            .populate('lastMessage')
-            .sort({ updatedAt: -1 })
-            .lean();
-        res.json({ chats });
-    }
-    catch(err){
-        console.error("Error fetching chat rooms:", err);
-        res.status(500).json({ error: "Failed to fetch chat rooms" });
+
+        const chats = await ChatRoom.find({
+            participants: loggedinUserId
+        })
+        .populate(
+            "participants",
+            "fullName profilePic email"
+        )
+       .populate({
+        path: "lastMessage",
+        populate: {
+            path: "senderId",
+            select: "fullName "
+        }
+    })
+        .sort({ updatedAt: -1 })
+        .lean();
+
+        const formattedChats = chats .filter(chat => chat.lastMessage).map(chat => {
+            
+
+            // Group Chat
+            if (chat.isGroupChat) {
+                return {
+                    chatId: chat._id,
+                    isGroupChat: true,
+                    name: chat.groupName,
+                    profileImage: chat.groupPic,
+
+                    lastMessage: chat.lastMessage
+                        ? {
+                              id: chat.lastMessage._id,
+                              text: chat.lastMessage.content?.text,
+                              mediaUrl: chat.lastMessage.content?.mediaUrl,
+                              messageType: chat.lastMessage.messageType,
+                              senderId: chat.lastMessage.senderId,
+                              createdAt: chat.lastMessage.createdAt
+                          }
+                        : null
+                };
+            }
+
+            // Direct Chat
+            const otherUser = chat.participants.find(
+                participant =>
+                    participant._id.toString() !==
+                    loggedinUserId.toString()
+            );
+
+            return {
+                chatId: chat._id,
+                isGroupChat: false,
+
+                user: {
+                    _id: otherUser?._id,
+                    fullName: otherUser?.fullName,
+                    profileImage: otherUser?.profileImage,
+                    email: otherUser?.email,
+                    profilePic: otherUser?.profilePic
+                },
+
+                lastMessage: chat.lastMessage
+                    ? {
+                          id: chat.lastMessage._id,
+                          text: chat.lastMessage.content?.text,
+                          mediaUrl: chat.lastMessage.content?.mediaUrl,
+                          messageType: chat.lastMessage.messageType,
+                          senderId: chat.lastMessage.senderId,
+                          createdAt: chat.lastMessage.createdAt
+                      }
+                    : null
+            };
+        });
+
+        return res.status(200).json({
+            chats: formattedChats
+        });
+
+    } catch (error) {
+        console.error("Error fetching chats:", error);
+
+        return res.status(500).json({
+            error: "Failed to fetch chats"
+        });
     }
 };
 
 export const getMessagesById = async (req, res) => {
     try{
-        const chatId = req.params.chatId;
+        const {chatId} = req.params;
         const { cursor } = req.query;
         if (!chatId) {
         return res.status(400).json({ error: "chatId is required" });}
@@ -241,8 +314,10 @@ export const createGroup = async (req, res) => {
 
 export const sendMessage = async (req, res) => {
     const { content} = req.body;
+    const {mediaUrl} = req.body;
+    const mediaType = req.body.mediaType;   
     const chatId = req.params.chatId;
-    if (!content.mediaUrl ){
+    if (mediaType == "image" || mediaType == ""){
         const uploadResponse = await cloudinary.uploader.upload(mediaUrl);
         content.mediaUrl = uploadResponse.secure_url;
     }
@@ -251,12 +326,14 @@ export const sendMessage = async (req, res) => {
         const newMessage = new Message({
             chatId,
             senderId: loggedinUserId,
-            content : content
+            content : content,
+            messageType: mediaType || "text"
         });
         await newMessage.save();
 
         // send message in real time using socket.io
-        await ChatRoom.findByIdAndUpdate(ObjectId(chatId), { $push: { messages: newMessage._id } }, { $set: { lastMessage: newMessage._id } });
+        await ChatRoom.findByIdAndUpdate((chatId), { $push: { messages: newMessage._id }, $set: { lastMessage: newMessage._id }} );
+
         res.status(201).json({ message: "Message sent successfully", data: newMessage });
     }
     catch(err){

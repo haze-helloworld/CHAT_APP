@@ -25,7 +25,7 @@ const messageSchema = new mongoose.Schema({
 
 
 
-messageSchema.pre('validate', function validateMessageContent(next) {
+messageSchema.pre('validate', function validateMessageContent() {
     const hasText = typeof this.content.text === 'string' && this.content.text.trim().length > 0;
     const hasImage = typeof this.content.mediaUrl === 'string' && this.content.mediaUrl.trim().length > 0;
     const hasAudio = typeof this.content.audio === 'string' && this.content.audio.trim().length > 0;
@@ -42,7 +42,7 @@ messageSchema.pre('validate', function validateMessageContent(next) {
         this.invalidate('audio', 'Audio is required when messageType is audio.');
     }
 
-    next();
+    
 });
 
 messageSchema.index({ chatId: 1 }); // created index on chatId fro fast retrieval

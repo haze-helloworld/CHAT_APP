@@ -15,12 +15,12 @@ const ContactsList = () => {
     return(allContacts.map((contact) => (
     <div
       key={contact.chat._id}
-      className="p-4 hover:bg-[#3D284C] cursor-pointer"
+      className="p-2 rounded-xl hover:bg-[#BB9DD7] cursor-pointer"
       onClick={() => setSelectedChat(contact)}
     >
         <div className="flex items-center gap-3 mb-2">
             <img src = {contact.user.profilePic} alt={contact.user.fullName} className="w-10 h-10 rounded-full object-cover" />
-      <h3 className="text-lg font-semibold text-white">{contact.user.fullName}</h3>
+      <h3 className="text-lg font-semibold font-pixelify text-white hover:text-[#291832]">{contact.user.fullName} </h3>
          </div>
 
     </div>
