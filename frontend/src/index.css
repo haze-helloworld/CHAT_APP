@@ -3,3 +3,7 @@
 
 @import "tailwindcss";
 @plugin "daisyui";
+
+@theme {
+  --font-pixelify: "Pixelify Sans", sans-serif;
+}

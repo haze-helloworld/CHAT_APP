@@ -24,11 +24,11 @@ function ChatHeader() {
     ">
      
       <div className="flex items-center gap-4">
-        <div className={`relative avatar ${selectedChat?.user.status ? 'avatar-online' : 'avatar-offline'}`}>
+        <div className={`relative avatar ${selectedChat.isGroupChat ? 'avatar' : selectedChat.user.status ? 'avatar-online' : 'avatar-offline'}`}>
 
           <img
-            src={selectedChat?.user.profilePic}
-            alt={selectedChat?.user.fullName}
+            src={selectedChat.isGroupChat ? selectedChat.groupPic : selectedChat.user.profilePic}
+            alt={selectedChat.isGroupChat ? selectedChat.groupName : selectedChat.user.fullName}
             className="
              avatar-online
               w-14 h-14
@@ -44,11 +44,11 @@ function ChatHeader() {
 
         <div className="flex flex-col">
           <h2 className="text-xl font-semibold font-pixelify text-white">
-            {selectedChat?.user.fullName}
+            {selectedChat.isGroupChat ? selectedChat.groupName : selectedChat?.user.fullName}
           </h2>
 
           <p className="text-sm text-gray-400 font-iosevka">
-            {selectedChat?.user.status}
+            {selectedChat.isGroupChat ? selectedChat.groupStatus : selectedChat?.user.status}
           </p>
         </div>
 
@@ -66,7 +66,7 @@ function ChatHeader() {
           </span>
 
           <span className="ml-2 text-sm font-semibold text-purple-300">
-            {selectedChat?.user.friendCode}
+            {selectedChat.isGroupChat ? selectedChat.groupCode : selectedChat?.user.friendCode}
           </span>
         </div>
       </div>

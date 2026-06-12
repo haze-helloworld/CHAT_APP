@@ -63,17 +63,6 @@ export const useChatStore = create((set, get) => ({
       set({ isMessagesLoading: false });
     }
   },
-    getAllParticipants: async (chatId) => {
-        set({isParticipantLoading: true});
-        try{
-            const response = await axiosInstance.get(`/message/chats/${chatId}/participants`);
-            set({participants: response.data});
-        } catch (error) {
-            console.error('Error fetching participants:', error);
-        } finally {
-            set({isParticipantLoading: false});
-        }
-    },
     getAllMessages: async (chatId) => {
         set({isMessagesLoading: true});
         try{
@@ -84,7 +73,19 @@ export const useChatStore = create((set, get) => ({
         } finally {
             set({isMessagesLoading: false});
         }
-    }
+    },
+    createGroup: async (groupName, participants, profilePic) => {
+      try {
+        const response = await axiosInstance.post('/message/groups', { groupName, participants , profilePic});
+        return response.data;
+      } catch (error) {
+        console.error('Error creating group:', error);
+        throw error;
+      }
+    },
+
+    addFriend: async (friendCode) => {},
+    sendMessage: async (chatId, message) => {},
 
 
 }));

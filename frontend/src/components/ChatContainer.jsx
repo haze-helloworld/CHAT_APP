@@ -5,9 +5,10 @@ import { useAuthStore } from "../store/useAuthStore.js";
 import ChatHeader from "./ChatHeader.jsx";
 import InputMessage from "./InputMessage.jsx";
 import NoChatHistoryPlaceHolder from "./NoChatHistoryPlaceHolder.jsx";
+import MessagesLoadingSkeleton from "./MessagesLoadingSkeleton.jsx";
 
 const ChatContainer = () => {
-  const { selectedChat, messages, getMessagesById } = useChatStore();
+  const { selectedChat, messages, getMessagesById, isMessagesLoading } = useChatStore();
   const { authUser } = useAuthStore();
 
   const bottomRef = useRef(null);
@@ -36,14 +37,12 @@ const ChatContainer = () => {
           px-5
           py-6
           space-y-4
-          bg-gradient-to-b
+          bg-linear-to-b
           from-[#43245E]
             to-[#291832]
         "
       >
-        {messages.length === 0 ? (
-          <NoChatHistoryPlaceHolder />
-        ) : (
+        {messages.length >0 && !isMessagesLoading ?  (
           messages.map((message) => {
             const isMe =
               message.senderId._id === authUser._id;
@@ -51,10 +50,10 @@ const ChatContainer = () => {
             return (
               <div
                 key={message._id}
-                className={`chat chat-start flex animate-fadeIn ${
+                className={`chat flex animate-fadeIn ${
                   isMe
-                    ? "justify-end"
-                    : "justify-start"
+                    ? "chat-end justify-end"
+                    : "chat-start justify-start"
                 }`}
               >
                 <div
@@ -82,9 +81,7 @@ const ChatContainer = () => {
 
                   <div
                     className={`
-                      px-4
-                      py-3
-                      rounded-2xl
+                     chat-bubble relative
                       backdrop-blur-lg
                       shadow-xl
                       transition-all
@@ -119,7 +116,7 @@ const ChatContainer = () => {
                     </div>
 
                     {message.content?.text && (
-                      <p className="leading-relaxed break-words">
+                      <p className="leading-relaxed wrap-break-words">
                         {message.content.text}
                       </p>
                     )}
@@ -159,6 +156,10 @@ const ChatContainer = () => {
               </div>
             );
           })
+        ): isMessagesLoading ? (
+         <MessagesLoadingSkeleton />
+        ) : (
+          <NoChatHistoryPlaceHolder />
         )}
 
         <div ref={bottomRef} />

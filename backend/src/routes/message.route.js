@@ -20,6 +20,7 @@ messageRouter.get('/chats/:chatId/messages', validatechatId, getMessagesById);
 messageRouter.post('/chats/:chatId/messages', validatechatId, sendMessage);
 
 //participants
+messageRouter.post('/chats/group',validateUserId, createGroup);
 messageRouter.get('/chats/:chatId/participants', validatechatId, getParticipants);
 messageRouter.post('/chats/:chatId/participants', validateUserId, validatechatId, addParticipant);
 messageRouter.delete('/chats/:chatId/participants', validateUserId, validatechatId, removeParticipant);

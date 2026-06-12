@@ -1,8 +1,20 @@
 
 import{SendIcon, ImageIcon} from "lucide-react";
 import { useState } from "react";
+import useKeyboardSound from "../hooks/useKeyboardSound.js";
+import { useRef } from "react";
+import { useChatStore } from "../store/useChatStore.js";
+
 function InputMessage() {
   const [message, setMessage] = useState("");
+  const {playRandomKeySound} = useKeyboardSound();
+  const [imagePreview, setImagePreview] = useState(null);
+  const fileInputRef = useRef(null);
+  const {sendMessage, isSoundEnabled} = useChatStore();
+  const handleKeyPress = () => {
+    playRandomKeySound();
+  };
+
   return (
 <div className="w-full p-4 border-t border-white/10 bg-[#291832]/70 rounded-tl-2xl rounded-tr-2xl">
   <div className="relative flex items-center gap-3 bg-[#3D284C]/70 border border-white/10 rounded-2xl px-4 py-3 backdrop-blur-sm">
@@ -21,7 +33,7 @@ function InputMessage() {
         flex-1
         bg-[#65407D]/70
         text-[#291832]
-        placeholder: text-[#291832]/60
+
         rounded-xl
         px-4 py-2
         focus:outline-none
