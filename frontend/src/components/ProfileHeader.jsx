@@ -18,8 +18,11 @@ const ProfileHeader = () => {
             <h2 className="text-xl font-bold font-pixelify text-white truncate">
                 {authUser.fullName}
             </h2>
-            <p className="text-slate-300 text-xs">Online</p>
-            <p className="text-slate-400 text-xs">Friend Code : {authUser.friendCode}</p>
+            <p className="text-slate-300 text-xs font-iosevka">Online</p>
+            <div className="hidden md:flex items-center gap-2 mt-1 bg-[#3D284C]/70 px-2 py-1 rounded-full border border-white/10">
+           
+                <p className=" font-iosevka text-purple-300 text-sm font-semibold">{authUser.friendCode}</p>
+            </div>
             </div>
            </div>
             <div className="flex items-center gap-2">

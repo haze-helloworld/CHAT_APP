@@ -122,7 +122,7 @@ export const getAllChats = async (req, res) => {
         })
         .populate(
             "participants",
-            "fullName profilePic email"
+            "fullName profilePic email friendCode status"
         )
        .populate({
         path: "lastMessage",
@@ -174,7 +174,9 @@ export const getAllChats = async (req, res) => {
                     fullName: otherUser?.fullName,
                     profileImage: otherUser?.profileImage,
                     email: otherUser?.email,
-                    profilePic: otherUser?.profilePic
+                    profilePic: otherUser?.profilePic,
+                    friendCode: otherUser?.friendCode,
+                    status: otherUser?.status
                 },
 
                 lastMessage: chat.lastMessage
@@ -215,7 +217,7 @@ export const getMessagesById = async (req, res) => {
             query.createdAt = { $lt: new Date(cursor) };
         }
 
-        const messages = await Message.find(query).sort({ createdAt: -1 }).limit(50).lean();
+        const messages = await Message.find(query).sort({ createdAt: 1 }).populate('senderId', 'fullName profilePic').limit(50).lean();
          
         res.json({
             messages,

@@ -21,10 +21,10 @@ const ProfilePicture = () => {
 
 
   return (
-   <div className = "avatar online">
+   <div >
     <button className= "size-14 rounded-full overflow-hidden relative group" onClick={() => fileInputRef.current?.click()}>
     <img src= {selectedImage || authUser.profilePic || "https://via.placeholder.com/150"}  alt = "User Profile Picture"
-    className = "size-full object-cover"/>
+    className = "  w-14 h-14  rounded-full  object-cover  ring-2  ring-[#3D284C]  ring-offset-2 ring-offset-[#65407D] shadow-lg"/>
     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                 <span className="text-white text-xs">Change</span>
               </div>

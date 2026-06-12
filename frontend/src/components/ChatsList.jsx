@@ -20,7 +20,7 @@ const ChatsList = () => {
     <div
       key={chat.chatId}
       className="p-2 rounded-xl hover:bg-[#BB9DD7] cursor-pointer"
-      onClick={() => setSelectedChat(chat)}
+  onClick={() => setSelectedChat(chat)}
     >
         <div className="flex items-center gap-3 mb-2">
             <img src = {chat.user.profilePic } alt={chat.user?.fullName} className="w-10 h-10 rounded-full object-cover" />

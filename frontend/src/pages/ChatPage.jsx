@@ -25,6 +25,7 @@ function ChatPage() {
           p-6
           flex
           gap-4
+          
         "
       >
         
@@ -39,6 +40,8 @@ function ChatPage() {
             flex-col
             overflow-hidden
             shadow-lg
+            md:1/4
+           
           "
         >
           <ProfileHeader />
@@ -48,7 +51,7 @@ function ChatPage() {
             <ActiveTabSwitch />
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4 ">
             {activeTab === "chats" ? (
               <ChatsList />
             ) : (
@@ -57,8 +60,7 @@ function ChatPage() {
           </div>
         </div>
 
-        {/* RIGHT CHAT PANEL */}
-        <div
+            <div
           className="
             flex-1
             bg-[#43245E]
@@ -67,6 +69,8 @@ function ChatPage() {
             rounded-[32px]
             overflow-hidden
             shadow-lg
+            w-full
+            md:w-3/4
           "
         >
           {selectedChat ? (
