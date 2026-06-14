@@ -1,18 +1,19 @@
 
 import{SendIcon, ImageIcon, XCircleIcon} from "lucide-react";
 import { useState } from "react";
-import useKeyBoardSound from "../hooks/useKeyBoardSound.js";
+
 import { useRef } from "react";
 import { useChatStore } from "../store/useChatStore.js";
 import { toast } from "react-hot-toast";
-
+import {playRandomKeySound, playRandomSendSound} from "../hooks/useKeyBoardSound.js";
 
 function InputMessage() {
   const [message, setMessage] = useState("");
-  const {playRandomKeySound} = useKeyBoardSound();
+
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const {sendMessage, isSoundEnabled} = useChatStore();
+  
   const handleKeyPress = () => {
     playRandomKeySound();
   };
@@ -20,7 +21,7 @@ function InputMessage() {
     e.preventDefault();
     if (!message.trim() && !imagePreview) return;
     if (isSoundEnabled) {
-    playRandomKeySound();
+    playRandomSendSound();
    }
     sendMessage({ text: message, mediaUrl: imagePreview, messageType: (imagePreview ? "image" : "text") });
     setMessage("");
@@ -89,7 +90,7 @@ function InputMessage() {
       placeholder="Send a message..."
       value={message}
       onChange={(e) => setMessage(e.target.value)}
-      onKeyPress={(e) => {isSoundEnabled && playRandomKeySound()}}
+      onKeyPress={(e) => {if(isSoundEnabled) playRandomKeySound(); if (e.key === "Enter") handleSendMessage(e)}}
       className="
         flex-1
         bg-[#65407D]/70

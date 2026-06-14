@@ -1,7 +1,7 @@
 import {create} from 'zustand';
 import axiosInstance from "../libs/axios.js";
 import {toast} from "react-hot-toast";
-
+import {useAuthStore} from "./useAuthStore.js";
 export const useChatStore = create((set, get) => ({
     allContacts: [],
     chats: [],
@@ -100,17 +100,51 @@ export const useChatStore = create((set, get) => ({
         toast.error(error.response?.data?.message || "Something went wrong");
       }
     },
-    sendMessage: async (messageData) => {
-      try {
-        //messageData should contain text, mediaUrl, messageType
-        const response = await axiosInstance.post(`/message/chats/${get().selectedChat?.chatId}/messages`, messageData);
-        set(messages => [...messages, response.data]);
-        return response.data;
-    
-      } catch (error) {
-        console.error('Error sending message:', error);
-        throw error;
-      }}
+  sendMessage: async (messageData) => {
+  const authUser = useAuthStore.getState().authUser;
 
+  const tempMessage = {
+    _id: `temp-${Date.now()}`,
+    senderId: authUser,
+    content: {
+      text: messageData.text,
+      mediaUrl: messageData.mediaUrl
+    },
+    messageType: messageData.messageType || "text",
+    createdAt: new Date().toISOString(),
+    isOptimistic: true
+  };
+
+  set((state) => ({
+    messages: [...state.messages, tempMessage]
+  }));
+
+  try {
+    const response = await axiosInstance.post(
+      `/message/chats/${get().selectedChat?.chatId}/messages`,
+      messageData
+    );
+
+    set((state) => ({
+      messages: state.messages.map((msg) =>
+        msg._id === tempMessage._id
+          ? response.data.data
+          : msg
+      )
+    }));
+
+    return response.data.data;
+
+  } catch (error) {
+    set((state) => ({
+      messages: state.messages.filter(
+        (msg) => msg._id !== tempMessage._id
+      )
+    }));
+
+    console.error("Error sending message:", error);
+    throw error;
+  }
+}
 
 }));

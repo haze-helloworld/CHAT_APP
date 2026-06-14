@@ -13,18 +13,27 @@ const keySounds = [
     new Audio(keyboardSound3),
     new Audio(keyboardSound4),
     new Audio(keyboardSound5),
-    new Audio(keyboardSound6),
-    new Audio(keyboardSound7),
+   
 ];
-function useKeyBoardSound() {
-    const playRandomKeySound = () => {
+
+const sendSound = [new Audio(keyboardSound6),
+    new Audio(keyboardSound7)
+];
+
+export const playRandomKeySound = () => {
         const randomSound = keySounds[Math.floor(Math.random() * keySounds.length)];
         randomSound.currentTime = 0;
         randomSound.play().catch((error) => {
             console.error("Error playing sound:", error);
         });
     };
-    return {playRandomKeySound};
+export const playRandomSendSound = () => {
+        const randomSound = sendSound[Math.floor(Math.random() * sendSound.length)];
+        randomSound.currentTime = 0;
+        randomSound.play().catch((error) => {
+            console.error("Error playing sound:", error);
+        }
+        );
+ 
 }
 
-export default useKeyBoardSound;
