@@ -16,6 +16,7 @@ export const getAllContacts = async (req, res) => {
         // Get all contact users
         const users = await User.find({
             _id: { $in: contactIds }
+            
         }).select("-password");
 
         // Get all chat IDs
@@ -43,6 +44,7 @@ export const getAllContacts = async (req, res) => {
 
             return {
                 user: contactUser,
+                chatId: contact.chatId,
                 chat: {
                     _id: chat?._id,
                     lastMessage: chat?.lastMessage,
@@ -69,42 +71,48 @@ export const addContacts = async (req, res) => {
     try{
         const loggedinUser= req.user;
         const loggedinUserId = req.user._id;
-        const {friendCode} = req.body;
-        const user = await User.findOne({ friendCode });
-        const UserId = user._id;
+        const friendCode = req.body.friendCode;
+        const friend = await User.findOne({ friendCode });
+        const FriendId = friend._id;
+        console.log("Logged in user ID:", loggedinUserId);
+        console.log("User ID to add:", FriendId);
 
-        if (loggedinUserId.toString() === user._id.toString()) {
+        if (loggedinUserId.toString() === friend._id.toString()) {
                 return res.status(400).json({
                     error: "You cannot add yourself"
                     });
                 }
 
-                if(!user){
+                if(!friend){
                     return res.status(404).json({
                         error: "User not found"
                     });
                 }
                     
-                if (user.contacts.some(contact => contact.userId.toString() === UserId)){
+                if (loggedinUser.contacts.some(contact => contact.userId.toString() === FriendId)){
                         return res.status(400).json({
                         error: "Contact already exists"
                                 });
                                 }
         const chatroom = await ChatRoom.create({
-                participants: [loggedinUserId, UserId],
+                participants: [loggedinUserId, FriendId],
                 isGroup: false,
                 groupCode: nanoid(8)
             });
        
         
          
-        loggedinUser.contacts.push({userId: UserId, friendCode: user.friendCode, _id: chatroom._id});
-        user.contacts.push({userId: loggedinUserId, friendCode: loggedinUser.friendCode, _id: chatroom._id});
+        loggedinUser.contacts.push({userId: FriendId, chatId: chatroom._id});
+        friend.contacts.push({userId: loggedinUserId, chatId: chatroom._id});
         await loggedinUser.save();
-        await user.save();
+        await friend.save();
         res.json({
             message: "Contact added successfully",
-            chatId: chatroom._id
+            chatId: chatroom._id,
+            user: {
+                _id: friend._id,
+             
+            }
         });
     }
     catch(error){
@@ -112,43 +120,67 @@ export const addContacts = async (req, res) => {
         res.status(500).json({ error: "Failed to add contact" });
     }
 }
-
 export const createGroupChat = async (req, res) => {
-        try{
-            const loggedinUserId = req.user._id;
-            const { groupName, participantIds , groupPic} = req.body;
-            participantIds.push(loggedinUserId);
-            if (!groupName || !participantIds || participantIds.length < 2) {
-                return res.status(400).json({
-                    error: "Invalid group chat data"
-                });
-            }
-        
+    try {
+        const loggedinUserId = req.user._id;
 
-        const chatroom = await ChatRoom.create({
-            groupName: groupName,
-            admin: loggedinUserId,
-            participants: participantIds,
-            isGroupChat: true,
-            groupCode: nanoid(8),
-            groupPic: groupPic
+        const {
+            groupName,
+            participants,
+            profilePic
+        } = req.body;
 
-        });
+        if (
+            !groupName ||
+            !Array.isArray(participants) ||
+            participants.length < 1
+        ) {
+            return res.status(400).json({
+                error: "Invalid group chat data"
+            });
+        }
 
-        await User.updateMany(
-            { _id: { $in: participantIds } },
-            { $push: { contacts: { groupName: chatroom.groupName, groupPic: chatroom.groupPic, _id: chatroom._id } } }
+        const users = await User.find({
+            friendCode: { $in: participants }
+        }).select("_id");
+
+        const participantIds = users.map(
+            user => user._id
         );
 
-        res.status(201).json({ message: "Group chat created successfully", chatId: chatroom._id });
+        participantIds.push(loggedinUserId);
 
+        const uniqueParticipantIds = [
+            ...new Set(
+                participantIds.map(id => id.toString())
+            )
+        ];
+
+        const chatroom = await ChatRoom.create({
+            groupName,
+            admin: loggedinUserId,
+            participants: uniqueParticipantIds,
+            isGroupChat: true,
+            groupCode: nanoid(8),
+            groupPic: profilePic
+        });
+
+        res.status(201).json({
+            message: "Group chat created successfully",
+            chatId: chatroom._id
+        });
+
+    } catch (error) {
+        console.error(
+            "Error creating group chat:",
+            error
+        );
+
+        res.status(500).json({
+            error: "Failed to create group chat"
+        });
     }
-        catch(error){
-            console.error("Error creating group chat:", error);
-            res.status(500).json({ error: "Failed to create group chat" });
-        }
-}
-
+};
 export const getAllChats = async (req, res) => {
     try {
         const loggedinUserId = req.user._id;
@@ -159,7 +191,10 @@ export const getAllChats = async (req, res) => {
         .populate(
             "participants",
             "fullName profilePic email friendCode status"
-        )
+        ).populate(
+    "admin",
+    "fullName profilePic"
+)
        .populate({
         path: "lastMessage",
         populate: {
@@ -170,9 +205,10 @@ export const getAllChats = async (req, res) => {
         .sort({ updatedAt: -1 })
         .lean();
 
-        const formattedChats = chats .filter(chat => chat.lastMessage).map(chat => {
+        const formattedChats = chats .filter(chat => chat.lastMessage || chat.isGroupChat).map(chat => {
             
-
+            
+             
             // Group Chat
             if (chat.isGroupChat) {
                 return {
@@ -180,7 +216,8 @@ export const getAllChats = async (req, res) => {
                     isGroupChat: true,
                     name: chat.groupName,
                     profileImage: chat.groupPic,
-
+                    groupCode: chat.groupCode,
+                    admin: chat.admin.fullName,
                     lastMessage: chat.lastMessage
                         ? {
                               id: chat.lastMessage._id,
@@ -324,38 +361,14 @@ export const removeParticipant = async (req, res) => {
     }
 };
 
-export const createGroup = async (req, res) => {
-    const { groupName, participantIds } = req.body;
-
-     if (!groupName || !participantIds || participantIds.length < 1) {
-            return res.status(400).json({
-                error: "Group name and at least 2 participants required"
-            });
-        }
-
-    try{
-        const loggedinUserId = req.user._id;    
-        const newChatRoom = new ChatRoom({
-            name: groupName,
-            participants: [loggedinUserId, ...participantIds],
-            isGroup: true,
-            admin: loggedinUserId
-        });
-        await newChatRoom.save();
-        res.status(201).json({ message: "Group created successfully", chatRoom: newChatRoom });
-    }
-    catch(err){
-        console.error("Error creating group:", err);
-        res.status(500).json({ error: "Failed to create group" });
-    }
-};
 
 export const sendMessage = async (req, res) => {
-    const { content} = req.body;
+    const {text} = req.body;
+    const content = {text: text};
     const {mediaUrl} = req.body;
-    const mediaType = req.body.mediaType;   
+    const messageType = req.body.messageType;   
     const chatId = req.params.chatId;
-    if (mediaType == "image" || mediaType == ""){
+    if (messageType == "image" && mediaUrl) {
         const uploadResponse = await cloudinary.uploader.upload(mediaUrl);
         content.mediaUrl = uploadResponse.secure_url;
     }
@@ -365,13 +378,14 @@ export const sendMessage = async (req, res) => {
             chatId,
             senderId: loggedinUserId,
             content : content,
-            messageType: mediaType || "text"
+            messageType: messageType || "text"
         });
         await newMessage.save();
 
         // send message in real time using socket.io
         await ChatRoom.findByIdAndUpdate((chatId), { $push: { messages: newMessage._id }, $set: { lastMessage: newMessage._id }} );
 
+        await newMessage.populate('senderId', 'fullName profilePic');
         res.status(201).json({ message: "Message sent successfully", data: newMessage });
     }
     catch(err){

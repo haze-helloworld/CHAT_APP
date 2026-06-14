@@ -76,16 +76,41 @@ export const useChatStore = create((set, get) => ({
     },
     createGroup: async (groupName, participants, profilePic) => {
       try {
-        const response = await axiosInstance.post('/message/groups', { groupName, participants , profilePic});
+        const response = await axiosInstance.post('/message/chats/group', { groupName, participants , profilePic});
+        await get().getMyChatPartners();
+        toast.success("Group created successfully");  
         return response.data;
+
       } catch (error) {
         console.error('Error creating group:', error);
+        toast.error(error.response?.data?.message || "Something went wrong");
         throw error;
       }
     },
 
-    addFriend: async (friendCode) => {},
-    sendMessage: async (chatId, message) => {},
+    addFriend: async (friendCode) => {
+      try {
+        console.log("Adding friend with code:", friendCode);
+        const response = await axiosInstance.post('/message/contacts', { friendCode });
+        toast.success(response.data.message);
+        set(chats => [...chats, { chatId: response.data.chatId, isGroup: false }]);
+        set(allContacts => [...allContacts, { userId : friendCode, chatId: response.data.chatId }]);
+      } catch (error) {
+        console.error('Error adding friend:', error);
+        toast.error(error.response?.data?.message || "Something went wrong");
+      }
+    },
+    sendMessage: async (messageData) => {
+      try {
+        //messageData should contain text, mediaUrl, messageType
+        const response = await axiosInstance.post(`/message/chats/${get().selectedChat?.chatId}/messages`, messageData);
+        set(messages => [...messages, response.data]);
+        return response.data;
+    
+      } catch (error) {
+        console.error('Error sending message:', error);
+        throw error;
+      }}
 
 
 }));

@@ -30,24 +30,27 @@ function ChatPage() {
       >
         
         <div
-          className="
-            w-80
+          className= {`
+          
+            lg:w-87.5
             bg-[#43245E]
             border
             border-[#73508F]
-            rounded-[32px]
+            rounded-4xl
             flex
             flex-col
             overflow-hidden
             shadow-lg
-            md:1/4
            
-          "
+              ${selectedChat ? "hidden lg:flex w-full" : "flex"}
+            
+           
+          `}
         >
           <ProfileHeader />
 
         <AddFriendButton />
-          <div className="px-4 pt-2">
+          <div className="px-4 ">
             <ActiveTabSwitch />
           </div>
 
@@ -59,20 +62,16 @@ function ChatPage() {
             )}
           </div>
         </div>
-
             <div
-          className="
-            flex-1
-            bg-[#43245E]
-            border
-            border-[#73508F]
-            rounded-[32px]
-            overflow-hidden
-            shadow-lg
-            w-full
-            md:w-3/4
-          "
-        >
+        
+  className={`
+    bg-[#43245E]
+    border border-[#73508F]
+    rounded-4xl
+    overflow-hidden
+    shadow-lg
+    ${selectedChat ? "flex-1" : "hidden lg:flex lg:flex-1"}
+  `}>
           {selectedChat ? (
             <ChatContainer />
           ) : (

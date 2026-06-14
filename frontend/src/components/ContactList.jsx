@@ -16,11 +16,10 @@ const ContactsList = () => {
     <div
       key={contact.chat._id}
       className="p-2 rounded-xl hover:bg-[#BB9DD7] cursor-pointer"
-      onClick={() => setSelectedChat(contact)}
-    >
+      onClick={() => setSelectedChat(contact)}>
         <div className="flex items-center gap-3 mb-2">
-            <img src = {contact.user.profilePic} alt={contact.user.fullName} className="w-10 h-10 rounded-full object-cover" />
-      <h3 className="text-lg font-semibold font-pixelify text-white hover:text-[#291832]">{contact.user.fullName} </h3>
+            <img src = {contact.isGroupChat ? contact.chat.groupPic : contact.user.profilePic} alt={contact.isGroupChat ? contact.chat.groupName : contact.user.fullName} className="w-10 h-10 rounded-full object-cover" />
+      <h3 className="text-lg font-semibold font-pixelify text-white hover:text-[#291832]">{contact.isGroupChat ? contact.chat.groupName : contact.user.fullName} </h3>
          </div>
 
     </div>

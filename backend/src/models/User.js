@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "ChatRoom",
       },
+        isGroupChat: {
+    type: Boolean,
+    default: false
+  },
+  groupName: String,
+  groupPic: String
     },],
     email:{
         type : String,

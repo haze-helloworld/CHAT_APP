@@ -14,7 +14,7 @@ const AddFriendButton = () => {
           <img
             src={sealPal}
             alt="Seal Pal"
-            className="w-12 h-auto ml-2 inline"
+            className="w-12 h-auto inline"
           />
           Add Seal Pal
         </button>

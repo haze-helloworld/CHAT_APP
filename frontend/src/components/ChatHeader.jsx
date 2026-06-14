@@ -27,8 +27,8 @@ function ChatHeader() {
         <div className={`relative avatar ${selectedChat.isGroupChat ? 'avatar' : selectedChat.user.status ? 'avatar-online' : 'avatar-offline'}`}>
 
           <img
-            src={selectedChat.isGroupChat ? selectedChat.groupPic : selectedChat.user.profilePic}
-            alt={selectedChat.isGroupChat ? selectedChat.groupName : selectedChat.user.fullName}
+            src={selectedChat.isGroupChat ? selectedChat.profileImage : selectedChat.user.profilePic}
+            alt={selectedChat.isGroupChat ? selectedChat.name : selectedChat.user.fullName}
             className="
              avatar-online
               w-14 h-14
@@ -44,11 +44,11 @@ function ChatHeader() {
 
         <div className="flex flex-col">
           <h2 className="text-xl font-semibold font-pixelify text-white">
-            {selectedChat.isGroupChat ? selectedChat.groupName : selectedChat?.user.fullName}
+            {selectedChat.isGroupChat ? selectedChat.name : selectedChat?.user.fullName}
           </h2>
 
           <p className="text-sm text-gray-400 font-iosevka">
-            {selectedChat.isGroupChat ? selectedChat.groupStatus : selectedChat?.user.status}
+            {selectedChat.isGroupChat ? "Admin : " + selectedChat.admin : selectedChat?.user.status}
           </p>
         </div>
 
@@ -62,7 +62,7 @@ function ChatHeader() {
           border border-white/10
         ">
           <span className="text-xs font-iosevka text-white/70">
-            Friend Code:
+            {selectedChat.isGroupChat ? "Group Code:" : "Friend Code:"}
           </span>
 
           <span className="ml-2 text-sm font-semibold text-purple-300">
@@ -73,7 +73,7 @@ function ChatHeader() {
 
       {/* Right Section */}
       <button
-        onClick={handleClose}
+        onClick={() => handleClose()}
         className="
           p-2
           rounded-full
