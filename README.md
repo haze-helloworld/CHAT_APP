@@ -4,7 +4,6 @@
   <img src="screenshots/ChatInterface.png" width="90%">
 </p>
 
-A real-time full-stack chat application...
 
 A real-time full-stack chat application with support for direct messages, group chats, image sharing, and a distinctly over-the-top glitchy terminal aesthetic. Built with React on the frontend and Node.js/Express on the backend, using Socket.io for live messaging.
 
@@ -112,8 +111,8 @@ CHAT_APP/
 ## 🖼️ Image Sharing
 
 <p align="center">
-  <img src="screenshots/sendPhotoDesktop.png" width="48%">
-  <img src="screenshots/sendPhoto.png" width="25%">
+  <img src="screenshots/sendPhotoDesktop.png" width="50%">
+  <img src="screenshots/sendPhoto.png" width="50%">
 </p>
 
 ---
