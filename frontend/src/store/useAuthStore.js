@@ -1,15 +1,21 @@
 import {create} from 'zustand';
 import axiosInstance from '../libs/axios';
 import toast from 'react-hot-toast';
+import {io} from 'socket.io-client';
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+
 export const useAuthStore = create((set,get) => ({
     authUser: null,
     isCheckingAuth: true,
     isSigningUp: false,
-
+    isLoggingIn: false,
+    socket: null,
+    onlineUsers: [],
     checkAuth: async () => {
         try {
             const response = await axiosInstance.get('/auth/check');
             set({ authUser: response.data});
+            get().connectSocket();
         }
         catch (error) {
             console.log("Error in authCheck:", error);
@@ -24,7 +30,7 @@ export const useAuthStore = create((set,get) => ({
         try {
             const response = await axiosInstance.post('/auth/signup', data);
             set({ authUser: response.data});
-
+            get().connectSocket();
         toast.success("Account create successfully! Welcome aboard!");
         }
         catch (error) {
@@ -41,8 +47,9 @@ export const useAuthStore = create((set,get) => ({
         try {
             const response = await axiosInstance.post('/auth/login', data);
             set({ authUser: response.data});
-
+           
         toast.success("Logged in successfully! Welcome back!");
+         get().connectSocket();
         }
         catch (error) {
            toast.error(error.response.data.message);
@@ -58,6 +65,7 @@ export const useAuthStore = create((set,get) => ({
         try{
             await axiosInstance.post('/auth/logout');
             set({ authUser: null });
+            get().disconnectSocket();
             toast.success("Logged out successfully! See you next time!");
         }
         catch(error){
@@ -74,8 +82,28 @@ export const useAuthStore = create((set,get) => ({
         }
         catch(error){
             toast.error("Error updating profile." );
-            console.error("Error in updateProfile:",  error.response?.data , errorS);
+            console.error("Error in updateProfile:",  error.response?.data , error);
         }
+    },
+    connectSocket: () => {
+        const {authUser} = get();
+        if(!authUser || get().socket?.connected) return;
+
+        const socket = io(BASE_URL, {
+            withCredentials: true,
+        })
+
+        socket.connect();
+        set({ socket });
+
+        socket.on("getOnlineUsers", (userIds) => {
+            set({ onlineUsers : userIds });
+        });
+    },
+    disconnectSocket: () => {
+       if(get().socket){
+        get().socket.disconnect();
+        set({ socket: null, onlineUsers: [] });
+       }
     }
 }));
-

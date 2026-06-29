@@ -1,10 +1,18 @@
 import { useChatStore } from "../store/useChatStore.js";
 import { XCircleIcon } from "lucide-react";
 import mouseClickSound from "../assets/sounds/mouse-click.mp3";
+import {useAuthStore} from "../store/useAuthStore.js";
+import ParticipantWindow from "./participantWindow.jsx";
+import { useState } from "react";
 
-function ChatHeader() {
+
+function ChatHeader({ onShowParticipants }) {
   const { selectedChat, setSelectedChat } = useChatStore();
+  const {onlineUsers} = useAuthStore();
 
+ 
+
+  !selectedChat.isGroupChat && (selectedChat.user.status = onlineUsers.includes( selectedChat.user._id ) ? "Online" : "Offline");
   const handleClose = () => {
     const clickSound = new Audio(mouseClickSound);
     clickSound.currentTime = 0;
@@ -24,11 +32,16 @@ function ChatHeader() {
     ">
      
       <div className="flex items-center gap-4">
-        <div className={`relative avatar ${selectedChat.isGroupChat ? 'avatar' : selectedChat.user.status ? 'avatar-online' : 'avatar-offline'}`}>
+        <div className={`relative avatar ${selectedChat.isGroupChat ? 'avatar' : selectedChat.user.status === "Online" ? 'avatar-online' : 'avatar-offline'}`}>
 
           <img
             src={selectedChat.isGroupChat ? selectedChat.profileImage : selectedChat.user.profilePic}
             alt={selectedChat.isGroupChat ? selectedChat.name : selectedChat.user.fullName}
+            onClick={(e) => {
+              if (selectedChat.isGroupChat) {
+                onShowParticipants();
+              }
+            }}
             className="
              avatar-online
               w-14 h-14
@@ -85,9 +98,15 @@ function ChatHeader() {
           active:scale-95
         "
       >
-        <XCircleIcon size={28} />
+         <XCircleIcon size={28} />
       </button>
+   
+   
+       
     </div>
+    
+
+
   );
 }
 

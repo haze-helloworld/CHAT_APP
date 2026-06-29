@@ -8,8 +8,7 @@ import {ENV} from './libs/env.js';
 import {connectDB} from './libs/db.js';
 import cookieParser from 'cookie-parser';
 import messageRouter from './routes/message.route.js';
-
-const app = express();
+import {app, server} from './libs/socket.js';
 
 const PORT = ENV.PORT;
 
@@ -37,7 +36,7 @@ if (ENV.NODE_ENV === 'production') {
 const startServer = async () => {
   try {
     await connectDB(); // FIRST connect DB
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   } catch (error) {

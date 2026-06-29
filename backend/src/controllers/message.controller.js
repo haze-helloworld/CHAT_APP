@@ -4,6 +4,8 @@ import User from '../models/User.js';
 import { ObjectId } from 'mongodb';
 import cloudinary from 'cloudinary';
 import { nanoid } from 'nanoid';
+import { getRecieversSocketIds } from '../libs/socket.js';
+
 export const getAllContacts = async (req, res) => {
     try {
         const user = req.user;
@@ -202,6 +204,7 @@ export const getAllChats = async (req, res) => {
             select: "fullName "
         }
     })
+    
         .sort({ updatedAt: -1 })
         .lean();
 
@@ -218,6 +221,11 @@ export const getAllChats = async (req, res) => {
                     profileImage: chat.groupPic,
                     groupCode: chat.groupCode,
                     admin: chat.admin.fullName,
+                    participants: chat.participants.map(participant => ({
+                        _id: participant._id,
+                        fullName: participant.fullName,
+                        profilePic: participant.profilePic,
+                        friendCode: participant.friendCode})),
                     lastMessage: chat.lastMessage
                         ? {
                               id: chat.lastMessage._id,
@@ -290,7 +298,7 @@ export const getMessagesById = async (req, res) => {
             query.createdAt = { $lt: new Date(cursor) };
         }
 
-        const messages = await Message.find(query).sort({ createdAt: 1 }).populate('senderId', 'fullName profilePic').limit(50).lean();
+        const messages = await Message.find(query).sort({ createdAt: 1 }).populate('senderId createdAt', 'fullName profilePic').limit(50).lean();
          
         res.json({
             messages,
@@ -381,8 +389,14 @@ export const sendMessage = async (req, res) => {
             messageType: messageType || "text"
         });
         await newMessage.save();
+        const chatRoom = await ChatRoom.findById(chatId);
 
-        // send message in real time using socket.io
+
+        const RecieverSocketIds = getRecieversSocketIds(chatRoom.participants);
+        RecieverSocketIds.forEach(socketId => {
+            req.io.to(socketId).emit("newMessage", newMessage
+            );
+        });
         await ChatRoom.findByIdAndUpdate((chatId), { $push: { messages: newMessage._id }, $set: { lastMessage: newMessage._id }} );
 
         await newMessage.populate('senderId', 'fullName profilePic');
