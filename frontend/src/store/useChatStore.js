@@ -177,9 +177,11 @@ if (!socket) {
   }
  },
 
- unsubscribeFromNewMessages : () => {
+unsubscribeFromNewMessages: () => {
   const socket = useAuthStore.getState().socket;
-  socket.off("newMessage");
- }
 
+  if (!socket) return;
+
+  socket.off("newMessage");
+}
 }))

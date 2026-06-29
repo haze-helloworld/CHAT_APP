@@ -1,4 +1,4 @@
-import {xIcon} from "lucide-react";
+import {XIcon} from "lucide-react";
 const ParticipantWindow = ({ selectedchat, onClose }) => {
   console.log(selectedchat);
 
@@ -32,7 +32,7 @@ const ParticipantWindow = ({ selectedchat, onClose }) => {
             onClick={onClose}
             className=
              "absolute top-4 right-4 text-white hover:text-red-400 transition-colors">
-            <xIcon/>
+            <XIcon/>
           </button>
         </div>
 

@@ -42,7 +42,7 @@ function ChatPage() {
             overflow-hidden
             shadow-lg
            
-              ${selectedChat ? "hidden lg:flex w-full" : "flex"}
+              ${selectedChat ? "hidden lg:flex w-full" : "flex w-full"}
             
            
           `}
