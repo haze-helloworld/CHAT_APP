@@ -1,3 +1,5 @@
+import User from "../models/User.js";
+
 export const validateParticipants = async (req, res, next) => {
     const { participants } = req.body;
 
