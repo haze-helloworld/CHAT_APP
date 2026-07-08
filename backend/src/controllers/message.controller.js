@@ -2,7 +2,7 @@ import Message from '../models/Message.js';
 import ChatRoom from '../models/chatRoom.js';
 import User from '../models/User.js';
 import { ObjectId } from 'mongodb';
-import cloudinary from 'cloudinary';
+import cloudinary from '../libs/cloudinary.js';
 import { nanoid } from 'nanoid';
 import { getRecieversSocketIds } from '../libs/socket.js';
 
@@ -79,17 +79,18 @@ export const addContacts = async (req, res) => {
         console.log("Logged in user ID:", loggedinUserId);
         console.log("User ID to add:", FriendId);
 
+          if(!friend){
+                    return res.status(404).json({
+                        error: "User not found"
+                    });
+                }
         if (loggedinUserId.toString() === friend._id.toString()) {
                 return res.status(400).json({
                     error: "You cannot add yourself"
                     });
                 }
 
-                if(!friend){
-                    return res.status(404).json({
-                        error: "User not found"
-                    });
-                }
+              
                     
                 if (loggedinUser.contacts.some(contact => contact.userId.toString() === FriendId)){
                         return res.status(400).json({
