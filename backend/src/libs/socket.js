@@ -11,8 +11,9 @@ const io = new Server(server,{
     cors: {
         origin: [ENV.CLIENT_URL],
         credentials: true   ,
-        transports: ['websocket'],                                     
-    }
+                                         
+    },
+    transports: ['websocket'],    
 });
 
 io.use((socketAuthMiddleware));
