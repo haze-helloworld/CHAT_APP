@@ -11,7 +11,6 @@ const ChatsList = () => {
     getMyChatPartners();
    }, [getMyChatPartners]);
 
-  console.log(chats);
    
    if (isUsersLoading) return <UsersLoadingSkeleton/>;
    if(chats.length === 0)return <NoChatsFound/>;

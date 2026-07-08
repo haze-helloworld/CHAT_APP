@@ -1,7 +1,5 @@
 import {XIcon} from "lucide-react";
 const ParticipantWindow = ({ selectedchat, onClose }) => {
-  console.log(selectedchat);
-
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-md">
       <div

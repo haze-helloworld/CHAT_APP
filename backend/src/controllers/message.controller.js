@@ -82,8 +82,6 @@ export const addContacts = async (req, res) => {
                     });
                 }
         const FriendId = friend._id;
-        console.log("Logged in user ID:", loggedinUserId);
-        console.log("User ID to add:", FriendId);
 
          
         if (loggedinUserId.toString() === friend._id.toString()) {

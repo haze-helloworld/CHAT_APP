@@ -11,9 +11,6 @@ function Login() {
 
 const handleSubmit = (e) => {
   e.preventDefault();
-
-  console.log("Submitting:", formData);
-
   login(formData);
 };
 

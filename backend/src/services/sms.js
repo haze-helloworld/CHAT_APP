@@ -13,7 +13,6 @@ const sendSMS = async (to, message) => {
       to: to, // include country code e.g. +91XXXXXXXXXX
     });
 
-    console.log("SMS sent:", res.sid);
     return res;
   } catch (err) {
     console.error(err);

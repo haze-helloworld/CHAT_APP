@@ -30,8 +30,6 @@ export const useChatStore = create((set, get) => ({
         try{
             const response = await axiosInstance.get('message/contacts');
             set({allContacts: response.data.contacts});
-            console.log(response.data.contacts);
-            console.log("Contacts fetched");
 
         } catch (error) {
             console.error('Error fetching contacts:', error);
@@ -46,7 +44,6 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get("/message/chats");
       set({ chats: res.data.chats });
-      console.log(res.data.chats);
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -59,7 +56,6 @@ export const useChatStore = create((set, get) => ({
     try {
       const res = await axiosInstance.get(`/message/chats/${chatId}/messages`);
       set({ messages: res.data.messages });
-      console.log(res.data.messages);
     } catch (error) {
       toast.error(error.response?.data?.message || "Something went wrong");
       console.log(error);
@@ -94,7 +90,6 @@ export const useChatStore = create((set, get) => ({
 
     addFriend: async (friendCode) => {
       try {
-        console.log("Adding friend with code:", friendCode);
         const response = await axiosInstance.post('/message/contacts', { friendCode });
         toast.success(response.data.message);
         set(chats => [...chats, { chatId: response.data.chatId, isGroup: false }]);
@@ -153,7 +148,6 @@ export const useChatStore = create((set, get) => ({
 subscribeToNewMessages: () => {
   const socket = useAuthStore.getState().socket;
   if (!socket) {
-    console.log("Socket not connected yet");
     return;
   }
 
