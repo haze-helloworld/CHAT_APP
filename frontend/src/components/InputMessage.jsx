@@ -59,7 +59,7 @@ function InputMessage() {
     <form onSubmit={handleSendMessage} className="flex items-center gap-3 w-full">
     {
       imagePreview && (
-        <div className="relative w-20 h-20 rounded-lg overflow-hidden">
+        <div className="relative w-10 h-20 rounded-lg overflow-hidden sm:w-20 ">
           <img src={imagePreview} alt="preview" className="w-full h-full object-cover" />
           <button
             className="absolute top-1 right-1 bg-transparent text-white rounded-full p-1"
@@ -86,21 +86,21 @@ function InputMessage() {
     </button>
 
     <input
-      type="text"
-      placeholder="Send a message..."
-      value={message}
-      onChange={(e) => setMessage(e.target.value)}
-      onKeyPress={(e) => {if(isSoundEnabled) playRandomKeySound(); if (e.key === "Enter") handleSendMessage(e)}}
-      className="
-        flex-1
-        bg-[#65407D]/70
-        text-[#291832]
-
-        rounded-xl
-        px-4 py-2
-        focus:outline-none
-      "
-    />
+  type="text"
+  placeholder="Send a message..."
+  value={message}
+  onChange={(e) => setMessage(e.target.value)}
+  onKeyPress={(e) => {if(isSoundEnabled) playRandomKeySound(); if (e.key === "Enter") handleSendMessage(e)}}
+  className="
+    flex-1
+    min-w-0
+    bg-[#65407D]/70
+    text-[#291832]
+    rounded-xl
+    px-4 py-2
+    focus:outline-none
+  "
+/>
 
     <button
       className="

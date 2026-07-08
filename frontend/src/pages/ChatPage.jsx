@@ -11,7 +11,7 @@ function ChatPage() {
   const { activeTab, selectedChat } = useChatStore();
 
   return (
-    <div className="min-h-dvh transparent flex items-center justify-center p-6">
+    <div className="min-h-dvh transparent flex items-center justify-center p-3 sm:p-6">
       <div
         className="
           w-full
