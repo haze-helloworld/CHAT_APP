@@ -17,6 +17,13 @@ const { selectedChat, messages, getMessagesById, isMessagesLoading,subscribeToNe
 
 
   useEffect(() => {
+  if (selectedChat?.chatId) {
+    getMessagesById(selectedChat.chatId);
+  }
+}, [selectedChat, getMessagesById]);
+
+
+  useEffect(() => {
     if(bottomRef.current) {
       bottomRef.current.scrollIntoView({
         behavior: "smooth",

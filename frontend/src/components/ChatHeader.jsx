@@ -12,7 +12,8 @@ function ChatHeader({ onShowParticipants }) {
 
  
 
-  !selectedChat.isGroupChat && (selectedChat.user.status = onlineUsers.includes( selectedChat.user._id ) ? "Online" : "Offline");
+
+  const isOnline = !selectedChat.isGroupChat && onlineUsers.includes(selectedChat.user._id);
   const handleClose = () => {
     const clickSound = new Audio(mouseClickSound);
     clickSound.currentTime = 0;
@@ -32,7 +33,7 @@ function ChatHeader({ onShowParticipants }) {
     ">
      
       <div className="flex items-center gap-4">
-        <div className={`relative avatar ${selectedChat.isGroupChat ? 'avatar' : selectedChat.user.status === "Online" ? 'avatar-online' : 'avatar-offline'}`}>
+        <div className={`relative avatar ${selectedChat.isGroupChat ? 'avatar' : isOnline ? 'avatar-online' : 'avatar-offline'}`}>
 
           <img
             src={selectedChat.isGroupChat ? selectedChat.profileImage : selectedChat.user.profilePic}
@@ -61,7 +62,7 @@ function ChatHeader({ onShowParticipants }) {
           </h2>
 
           <p className="text-sm text-gray-400 font-iosevka">
-            {selectedChat.isGroupChat ? "Admin : " + selectedChat.admin : selectedChat?.user.status}
+            {selectedChat.isGroupChat ? "Admin : " + selectedChat.admin : is}
           </p>
         </div>
 
