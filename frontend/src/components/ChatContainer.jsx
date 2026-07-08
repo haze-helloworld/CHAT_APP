@@ -10,18 +10,16 @@ import DateDivider from "./DateDivider.jsx";
 import { useState } from "react";
 
 const ChatContainer = () => {
-const { selectedChat, messages, getMessagesById, isMessagesLoading,subscribeToNewMessages, unsubscribeFromNewMessages } = useChatStore();
+const { selectedChat, messages, getMessagesById, isMessagesLoading} = useChatStore();
   const { authUser } = useAuthStore();
   const [showParticipantWindow, setShowParticipantWindow] = useState(false);
   const bottomRef = useRef(null);
 
-
   useEffect(() => {
-  if (selectedChat?.chatId) {
-    getMessagesById(selectedChat.chatId);
-  }
-}, [selectedChat, getMessagesById]);
-
+    if (selectedChat?.chatId) {
+      getMessagesById(selectedChat.chatId);
+    }
+  }, [selectedChat, getMessagesById]);
 
   useEffect(() => {
     if(bottomRef.current) {
