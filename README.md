@@ -1,7 +1,7 @@
 # 🦭 SealPal Chat App
 
 <p align="center">
-  <img src="screenshots/ChatInterface.png" width="90%">
+  <img src="screenshots/Realtimestatus.jpeg.png" width="90%">
 </p>
 
 
