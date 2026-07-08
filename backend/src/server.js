@@ -20,6 +20,12 @@ app.use(express.urlencoded({ limit: "10mb", extended: true }));
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 app.use(cookieParser());
 
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
+
+
 app.get('/health', (req, res) => res.status(200).json({ status: 'ok' }));
 app.use('/chat/home', homeRouter);
 app.use('/chat/mailer', mailerRouter);
