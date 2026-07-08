@@ -399,7 +399,9 @@ export const sendMessage = async (req, res) => {
         await newMessage.populate('senderId', 'fullName profilePic');
 
 
-           const RecieverSocketIds = getRecieversSocketIds(chatRoom.participants).filter(socketId => socketId !== req.userId);
+        const RecieverSocketIds = getRecieversSocketIds(
+    chatRoom.participants.filter(id => id.toString() !== loggedinUserId.toString())
+);
         RecieverSocketIds.forEach(socketId => {
             req.io.to(socketId).emit("newMessage", newMessage
             );
