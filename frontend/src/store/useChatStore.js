@@ -150,38 +150,49 @@ export const useChatStore = create((set, get) => ({
     throw error;
   }
 },
- subscribeToNewMessages : () => {
-  const {selectedChat, isSoundEnabled} = get();
-
-  if(!selectedChat) return;
-
-  
+subscribeToNewMessages: () => {
   const socket = useAuthStore.getState().socket;
+  if (!socket) {
+    console.log("Socket not connected yet");
+    return;
+  }
 
-if (!socket) {
-  console.log("Socket not connected yet");
-  return;
-}
+  socket.off("newMessage"); // avoid stacking duplicate listeners
+
   socket.on("newMessage", (newMessage) => {
-    if(newMessage.chatId !== selectedChat.chatId) return;
+    const { selectedChat, isSoundEnabled } = get();
 
+    if (selectedChat && newMessage.chatId === selectedChat.chatId) {
+      set((state) => ({
+        messages: [...state.messages, newMessage]
+      }));
+    }
     set((state) => ({
-      messages: [...state.messages, newMessage]
-    }));
-  }
-  )
-  
-  if(isSoundEnabled){
-    NotificationSound.currentTime = 0;
-    NotificationSound.play().catch(error => console.error("Error playing notification sound:", error));
-  }
- },
+  chats: state.chats
+    .map((chat) =>
+      chat.chatId === newMessage.chatId
+        ? { ...chat, lastMessage: newMessage }
+        : chat
+    )
+    .sort((a, b) => {
+      const aTime = a.lastMessage?.createdAt || 0;
+      const bTime = b.lastMessage?.createdAt || 0;
+      return new Date(bTime) - new Date(aTime);
+    })
+}));
+
+    if (isSoundEnabled) {
+      NotificationSound.currentTime = 0;
+      NotificationSound.play().catch((error) =>
+        console.error("Error playing notification sound:", error)
+      );
+    }
+  });
+},
 
 unsubscribeFromNewMessages: () => {
   const socket = useAuthStore.getState().socket;
-
   if (!socket) return;
-
   socket.off("newMessage");
 }
-}))
+}));

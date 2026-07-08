@@ -45,6 +45,7 @@ if(newUser){
         fullName: savedUser.fullName,
         email: savedUser.email,
         profilePic: savedUser.profilePic,
+        friendCode: savedUser.friendCode,
         message : "User created successfully"});
 
             try{
@@ -89,6 +90,7 @@ export const login = async (req, res) => {
             fullName: user.fullName,
             email: user.email,
             profilePic: user.profilePic,
+            friendCode: user.friendCode,
             message : "Login successful"
         });
     }

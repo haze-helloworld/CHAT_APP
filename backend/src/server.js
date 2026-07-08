@@ -8,7 +8,8 @@ import {ENV} from './libs/env.js';
 import {connectDB} from './libs/db.js';
 import cookieParser from 'cookie-parser';
 import messageRouter from './routes/message.route.js';
-import {app, server} from './libs/socket.js';
+import {app, server, io} from './libs/socket.js';
+
 
 const PORT = ENV.PORT;
 

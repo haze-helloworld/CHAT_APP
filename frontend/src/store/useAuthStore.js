@@ -2,6 +2,7 @@ import {create} from 'zustand';
 import axiosInstance from '../libs/axios';
 import toast from 'react-hot-toast';
 import {io} from 'socket.io-client';
+import {useChatStore} from './useChatStore.js';
 const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
 
 export const useAuthStore = create((set,get) => ({
@@ -98,7 +99,9 @@ export const useAuthStore = create((set,get) => ({
 
         socket.on("getOnlineUsers", (userIds) => {
             set({ onlineUsers : userIds });
+            
         });
+        useChatStore.getState().subscribeToNewMessages();
     },
     disconnectSocket: () => {
        if(get().socket){

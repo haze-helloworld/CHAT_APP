@@ -11,18 +11,18 @@ function ChatPage() {
   const { activeTab, selectedChat } = useChatStore();
 
   return (
-    <div className="min-h-screen transparent flex items-center justify-center p-6">
+    <div className="min-h-dvh transparent flex items-center justify-center p-6">
       <div
         className="
           w-full
           max-w-7xl
-          h-[90vh]
+          h-[90dvh]
           bg-[#2A123D]
           border
           border-[#65407D]
           rounded-[40px]
           shadow-[0_20px_50px_rgba(0,0,0,0.4)]
-          p-6
+          p-3 sm:p-6
           flex
           gap-4
           

@@ -75,15 +75,17 @@ export const addContacts = async (req, res) => {
         const loggedinUserId = req.user._id;
         const friendCode = req.body.friendCode;
         const friend = await User.findOne({ friendCode });
-        const FriendId = friend._id;
-        console.log("Logged in user ID:", loggedinUserId);
-        console.log("User ID to add:", FriendId);
 
-          if(!friend){
+         if(!friend){
                     return res.status(404).json({
                         error: "User not found"
                     });
                 }
+        const FriendId = friend._id;
+        console.log("Logged in user ID:", loggedinUserId);
+        console.log("User ID to add:", FriendId);
+
+         
         if (loggedinUserId.toString() === friend._id.toString()) {
                 return res.status(400).json({
                     error: "You cannot add yourself"
@@ -393,14 +395,17 @@ export const sendMessage = async (req, res) => {
         const chatRoom = await ChatRoom.findById(chatId);
 
 
-        const RecieverSocketIds = getRecieversSocketIds(chatRoom.participants);
+     
+        await ChatRoom.findByIdAndUpdate((chatId), { $push: { messages: newMessage._id }, $set: { lastMessage: newMessage._id }} );
+
+        await newMessage.populate('senderId', 'fullName profilePic');
+
+
+           const RecieverSocketIds = getRecieversSocketIds(chatRoom.participants).filter(socketId => socketId !== req.userId);
         RecieverSocketIds.forEach(socketId => {
             req.io.to(socketId).emit("newMessage", newMessage
             );
         });
-        await ChatRoom.findByIdAndUpdate((chatId), { $push: { messages: newMessage._id }, $set: { lastMessage: newMessage._id }} );
-
-        await newMessage.populate('senderId', 'fullName profilePic');
         res.status(201).json({ message: "Message sent successfully", data: newMessage });
     }
     catch(err){

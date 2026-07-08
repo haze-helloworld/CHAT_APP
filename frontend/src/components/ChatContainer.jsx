@@ -15,16 +15,6 @@ const { selectedChat, messages, getMessagesById, isMessagesLoading,subscribeToNe
   const [showParticipantWindow, setShowParticipantWindow] = useState(false);
   const bottomRef = useRef(null);
 
-  useEffect(() => {
-    if (selectedChat?.chatId) {
-      getMessagesById(selectedChat.chatId);
-      subscribeToNewMessages();
-
-      return () => {
-        unsubscribeFromNewMessages();
-      }
-    }
-  }, [selectedChat, getMessagesById, subscribeToNewMessages, unsubscribeFromNewMessages]);
 
   useEffect(() => {
     if(bottomRef.current) {

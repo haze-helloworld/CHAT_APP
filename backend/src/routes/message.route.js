@@ -6,6 +6,8 @@ import { validateUserId } from '../middleware/validateUserId.middleware.js';
 import { validatechatId } from '../middleware/validateGroupId.middleware.js';
 import {createGroupChat} from '../controllers/message.controller.js';
 import { validateFriendCode } from '../middleware/validateFriendCode.middleware.js';
+import { validateParticipants } from '../middleware/validateParticipants.middleware.js';
+
 const messageRouter = express.Router();
 
 messageRouter.use(protectRoute);
@@ -15,7 +17,7 @@ messageRouter.get('/contacts', getAllContacts);
 
 //chats
 messageRouter.get('/chats', getAllChats);
-messageRouter.post('/chats/group',validateFriendCode, createGroupChat);
+messageRouter.post('/chats/group',validateParticipants, createGroupChat);
 
 //messages
 messageRouter.get('/chats/:chatId/messages', validatechatId, getMessagesById);

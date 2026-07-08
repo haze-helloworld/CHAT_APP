@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 
 export const validateFriendCode = async (req, res, next) => {
     
+    
     const { friendCode } = req.body;
     try{
         const user = await User.findOne({ friendCode });
