@@ -62,7 +62,7 @@ function ChatHeader({ onShowParticipants }) {
           </h2>
 
           <p className="text-sm text-gray-400 font-iosevka">
-            {selectedChat.isGroupChat ? "Admin : " + selectedChat.admin : is}
+            {selectedChat.isGroupChat ? "Admin : " + selectedChat.admin : isOnline ? "Online" : "Offline"}
           </p>
         </div>
 
